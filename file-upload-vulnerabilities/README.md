@@ -1,8 +1,21 @@
+<!-- omit in toc -->
 # File Upload Vulnerabilities
+
+<!-- omit in toc -->
+## Table of Contents
+
+- [Remote code execution via web shell upload](#remote-code-execution-via-web-shell-upload)
+- [Web shell upload via Content-Type restriction bypass](#web-shell-upload-via-content-type-restriction-bypass)
+- [Web shell upload via path traversal](#web-shell-upload-via-path-traversal)
 
 ## Remote code execution via web shell upload
 Reference: https://portswigger.net/web-security/file-upload/lab-file-upload-remote-code-execution-via-web-shell-upload
 
+<!-- omit in toc -->
+### Quick Solution
+Upload the file as it is.
+
+<!-- omit in toc -->
 ### Solution
 
 1. While proxying traffic through Burp, log in to your account and notice the option for uploading an avatar image.
@@ -25,6 +38,11 @@ Submit the secret to solve the lab.
 
 Reference: https://portswigger.net/web-security/file-upload/lab-file-upload-web-shell-upload-via-content-type-restriction-bypass
 
+<!-- omit in toc -->
+### Quick Solution
+Change the ``Content-Type`` to ``image/jpeg`` or ``image/png`` during the POST request.
+
+<!-- omit in toc -->
 ### Solution
 
 1. Log in and upload an image as your avatar, then go back to your account page. 
@@ -44,6 +62,11 @@ Reference: https://portswigger.net/web-security/file-upload/lab-file-upload-web-
 
 Reference: https://portswigger.net/web-security/file-upload/lab-file-upload-web-shell-upload-via-path-traversal
 
+<!-- omit in toc -->
+### Quick Solution
+Add a path traversal while uploading the avatar to reach a higher level directory. The basic path traversal is blocked, so the **slash** must be encoded as *%2F*.
+
+<!-- omit in toc -->
 ### Solution
 
 1. Log in and upload an image as your avatar, then go back to your account page.
