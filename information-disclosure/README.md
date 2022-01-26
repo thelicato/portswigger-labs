@@ -7,6 +7,7 @@
 - [Information disclosure in error messages](#information-disclosure-in-error-messages)
 - [Information disclosure on debug page](#information-disclosure-on-debug-page)
 - [Information disclosure via backup files](#information-disclosure-via-backup-files)
+- [Authentication bypass via information disclosure](#authentication-bypass-via-information-disclosure)
 
 ## Information disclosure in error messages
 Reference: https://portswigger.net/web-security/information-disclosure/exploiting/lab-infoleak-in-error-messages
@@ -52,3 +53,19 @@ Browse to ``/robots.txt`` and discover that a ``/backup`` folder exists. Browse 
 2. Browse to ``/backup/ProductTemplate.java.bak`` to access the source code.
 3. In the source code, notice that the connection builder contains the hard-coded password for a Postgres database.
 4. Go back to the lab, click "Submit solution", and enter the database password to solve the lab.
+
+## Authentication bypass via information disclosure
+Reference: https://portswigger.net/web-security/information-disclosure/exploiting/lab-infoleak-authentication-bypass
+
+<!-- omit in toc -->
+### Quick Solution
+Browse to ``/admin`` and discover that it is not available to low-privileges users. Use the ``TRACE`` method to discover that the ``X-Custom-IP-Authorization`` header is appended to the response with your IP address. Change the value of this header to ``127.0.0.1`` and now you can access the ``/admin`` page.
+
+<!-- omit in toc -->
+### Solution
+1. In Burp Repeater, browse to ``GET /admin``. The response discloses that the admin panel is only accessible if logged in as an administrator, or if requested from a local IP.
+2. Send the request again, but this time use the `TRACE` method:
+``TRACE /admin``
+3. Study the response. Notice that the ``X-Custom-IP-Authorization`` header, containing your IP address, was automatically appended to your request. This is used to determine whether or not the request came from the ``localhost`` IP address.
+4. Go to "Proxy" > "Options", scroll down to the "Match and Replace" section, and click "Add". Leave the match condition blank, but in the "Replace" field, enter ``X-Custom-IP-Authorization: 127.0.0.1``. Burp Proxy will now add this header to every request you send.
+5. Browse to the home page. Notice that you now have access to the admin panel, where you can delete Carlos.
