@@ -27,7 +27,7 @@ This primary goal is to add the **Apprentice** and **Practitioner** level labs (
 - [ ] WebSockets Labs
 - [ ] Web Cache Poisoning Labs
 - [ ] Insecure Deserialization Labs
-- [ ] Information Disclosure Labs
+- [x] Information Disclosure Labs
 - [ ] Business Logic Vulnerabilities Labs
 - [ ] HTTP Host Header Attacks Labs
 - [ ] OAuth Authentication Labs

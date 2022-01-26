@@ -8,6 +8,7 @@
 - [Information disclosure on debug page](#information-disclosure-on-debug-page)
 - [Information disclosure via backup files](#information-disclosure-via-backup-files)
 - [Authentication bypass via information disclosure](#authentication-bypass-via-information-disclosure)
+- [Information disclosure in version control history](#information-disclosure-in-version-control-history)
 
 ## Information disclosure in error messages
 Reference: https://portswigger.net/web-security/information-disclosure/exploiting/lab-infoleak-in-error-messages
@@ -69,3 +70,19 @@ Browse to ``/admin`` and discover that it is not available to low-privileges use
 3. Study the response. Notice that the ``X-Custom-IP-Authorization`` header, containing your IP address, was automatically appended to your request. This is used to determine whether or not the request came from the ``localhost`` IP address.
 4. Go to "Proxy" > "Options", scroll down to the "Match and Replace" section, and click "Add". Leave the match condition blank, but in the "Replace" field, enter ``X-Custom-IP-Authorization: 127.0.0.1``. Burp Proxy will now add this header to every request you send.
 5. Browse to the home page. Notice that you now have access to the admin panel, where you can delete Carlos.
+
+## Information disclosure in version control history
+Reference: https://portswigger.net/web-security/information-disclosure/exploiting/lab-infoleak-in-version-control-history
+
+<!-- omit in toc -->
+### Quick Solution
+Browse to ``/.git``, download the folder with ``wget``. Study the commits and discover that there is a commit called ``Remove admin password from config``. Look at the diff and retrieve the hardcoded password.
+
+<!-- omit in toc -->
+### Solution
+1. Open the lab and browse to ``/.git`` to reveal the lab's Git version control data.
+2. Download a copy of this entire directory. For non-Windows users, the easiest way to do this is using the command ``wget -r https://your-lab-id.web-security-academy.net/.git``. Windows users will need to find an alternative method, or install a UNIX-like environment, such as Cygwin, in order to use this command.
+3. Explore the downloaded directory using your local Git installation. Notice that there is a commit with the message "``Remove admin password from config``".
+4. Look closer at the diff for the changed ``admin.conf`` file. Notice that the commit replaced the hard-coded admin password with an environment variable ``ADMIN_PASSWORD`` instead. However, the hard-coded password is still clearly visible in the diff.
+5. Go back to the lab and log in to the administrator account using the leaked password.
+6. To solve the lab, open the admin interface and delete Carlos's account.
