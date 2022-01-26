@@ -6,6 +6,7 @@
 
 - [Information disclosure in error messages](#information-disclosure-in-error-messages)
 - [Information disclosure on debug page](#information-disclosure-on-debug-page)
+- [Information disclosure via backup files](#information-disclosure-via-backup-files)
 
 ## Information disclosure in error messages
 Reference: https://portswigger.net/web-security/information-disclosure/exploiting/lab-infoleak-in-error-messages
@@ -37,3 +38,17 @@ Find a comment that points to ``/cgi-bing/phpinfo.php``. Go to the page and find
 3. In the site map, right-click on the entry for ``/cgi-bin/phpinfo.php`` and select "Send to Repeater".
 4. In Burp Repeater, send the request to retrieve the file. Notice that it reveals various debugging information, including the ``SECRET_KEY`` environment variable.
 5. Go back to the lab, click "Submit solution", and enter the ``SECRET_KEY`` to solve the lab.
+
+## Information disclosure via backup files
+Reference: https://portswigger.net/web-security/information-disclosure/exploiting/lab-infoleak-via-backup-files
+
+<!-- omit in toc -->
+### Quick Solution
+Browse to ``/robots.txt`` and discover that a ``/backup`` folder exists. Browse to ``/backup`` and then to the ``ProductTemplate.java.bak`` file which contains the hard-coded password.
+
+<!-- omit in toc -->
+### Solution
+1. Browse to ``/robots.txt`` and notice that it reveals the existence of a ``/backup`` directory. Browse to ``/backup`` to find the file ``ProductTemplate.java.bak``. Alternatively, right-click on the lab in the site map and go to "Engagement tools" > "Discover content". Then, launch a content discovery session to discover the ``/backup`` directory and its contents.
+2. Browse to ``/backup/ProductTemplate.java.bak`` to access the source code.
+3. In the source code, notice that the connection builder contains the hard-coded password for a Postgres database.
+4. Go back to the lab, click "Submit solution", and enter the database password to solve the lab.
