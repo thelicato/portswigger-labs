@@ -9,6 +9,7 @@
 - [SQL injection UNION attack, retrieving data from other tables](#sql-injection-union-attack-retrieving-data-from-other-tables)
 - [SQL injection UNION attack, retrieving multiple values in a single column](#sql-injection-union-attack-retrieving-multiple-values-in-a-single-column)
 - [SQL injection attack, querying the database type and version on Oracle](#sql-injection-attack-querying-the-database-type-and-version-on-oracle)
+- [SQL injection attack, querying the database type and version on MySQL and Microsoft](#sql-injection-attack-querying-the-database-type-and-version-on-mysql-and-microsoft)
 
 ## SQL injection UNION attack, determining the number of columns returned by the query
 Reference: https://portswigger.net/web-security/sql-injection/union-attacks/lab-determine-number-of-columns
@@ -116,4 +117,26 @@ Be aware that on Oracle databases every ``SELECT`` statement must specify a tabl
 3. Use the following payload to display the database version: 
 ```
 '+UNION+SELECT+BANNER,+NULL+FROM+v$version--
+```
+
+## SQL injection attack, querying the database type and version on MySQL and Microsoft
+Reference: https://portswigger.net/web-security/sql-injection/examining-the-database/lab-querying-database-version-mysql-microsoft
+
+<!-- omit in toc -->
+### Quick Solution
+This lab is similar to the ones before. The only difference is that it is mandatory to use Burp because seems impossible to inject the '#' character from the browser. The final payload is the following:
+```
+'+UNION+SELECT+@@version,+NULL#
+```
+
+<!-- omit in toc -->
+### Solution
+1. Use Burp Suite to intercept and modify the request that sets the product category filter.
+2. Determine the number of columns that are being returned by the query and which columns contain text data. Verify that the query is returning two columns, both of which contain text, using a payload like the following in the ``category`` parameter: 
+```
+'+UNION+SELECT+'abc','def'#
+```
+3. Use the following payload to display the database version: 
+```
+'+UNION+SELECT+@@version,+NULL#
 ```
