@@ -8,6 +8,7 @@
 - [SQL injection UNION attack, finding a column containing text](#sql-injection-union-attack-finding-a-column-containing-text)
 - [SQL injection UNION attack, retrieving data from other tables](#sql-injection-union-attack-retrieving-data-from-other-tables)
 - [SQL injection UNION attack, retrieving multiple values in a single column](#sql-injection-union-attack-retrieving-multiple-values-in-a-single-column)
+- [SQL injection attack, querying the database type and version on Oracle](#sql-injection-attack-querying-the-database-type-and-version-on-oracle)
 
 ## SQL injection UNION attack, determining the number of columns returned by the query
 Reference: https://portswigger.net/web-security/sql-injection/union-attacks/lab-determine-number-of-columns
@@ -94,3 +95,25 @@ The original query returns two colums, but only one contains text. Multiple valu
 '+UNION+SELECT+NULL,username||'~'||password+FROM+users--
 ```
 4. Verify that the application's response contains usernames and passwords.
+
+## SQL injection attack, querying the database type and version on Oracle
+Reference: https://portswigger.net/web-security/sql-injection/examining-the-database/lab-querying-database-version-oracle
+
+<!-- omit in toc -->
+### Quick Solution
+Be aware that on Oracle databases every ``SELECT`` statement must specify a table to select ``FROM``. There is a built-in table on Oracle called ``dual`` which can be used for this purpose. After retrieving the number of columns and which column contains data the SQL Injection cheatsheet can be used to discover how to retrieve the version on Oracle databases. The payload is the following:
+```
+'+UNION+SELECT+BANNER,+NULL+FROM+v$version--
+```
+
+<!-- omit in toc -->
+### Solution
+1. Use Burp Suite to intercept and modify the request that sets the product category filter.
+2. Determine the number of columns that are being returned by the query and which columns contain text data. Verify that the query is returning two columns, both of which contain text, using a payload like the following in the category parameter: 
+```
+'+UNION+SELECT+'abc','def'+FROM+dual--
+```
+3. Use the following payload to display the database version: 
+```
+'+UNION+SELECT+BANNER,+NULL+FROM+v$version--
+```
