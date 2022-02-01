@@ -8,6 +8,7 @@ This repo has been created to keep in a single place all the solutions of the la
 ## Tools
 The tools needed (other than Burp Pro) to complete the labs.
 
+- **SQL Injection**: ``sqlmap``;
 - **Clickjacking**: None;
 - **CORS**: None;
 - **WebSockets**: None;
