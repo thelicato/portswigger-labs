@@ -6,6 +6,10 @@ This repo contains the solutions for the PortSwigger Labs available in the **Aca
 This repo has been created to keep in a single place all the solutions of the labs. It should be helpful when preparing for the *Burp Suite Certified Practitioner* (https://portswigger.net/web-security/certification).
 
 ## Tools
+The tools needed (other than Burp Pro) to complete the labs.
+
+- **Clickjacking**: None;
+- **CORS**: None;
 - **WebSockets**: None;
 - **Information Disclosure**: None;
 - **File Upload Vulnerabilities**: ``ExifTool``;
@@ -15,9 +19,9 @@ This primary goal is to add the **Apprentice** and **Practitioner** level labs (
 - [ ] SQL Injection Labs
 - [ ] XSS Labs
 - [ ] CSRF Labs
-- [ ] Clickjacking Labs
+- [x] Clickjacking Labs
 - [ ] DOM-based vulnerabilities Labs
-- [ ] CORS Labs
+- [x] CORS Labs
 - [ ] XXE Injection Labs
 - [ ] SSRF Labs
 - [ ] HTTP Request Smuggling Labs
