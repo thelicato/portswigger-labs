@@ -5,13 +5,14 @@
 ## Table of Contents
 
 - [SQL injection UNION attack, determining the number of columns returned by the query](#sql-injection-union-attack-determining-the-number-of-columns-returned-by-the-query)
+- [SQL injection UNION attack, finding a column containing text](#sql-injection-union-attack-finding-a-column-containing-text)
 
 ## SQL injection UNION attack, determining the number of columns returned by the query
 Reference: https://portswigger.net/web-security/sql-injection/union-attacks/lab-determine-number-of-columns
 
 <!-- omit in toc -->
 ### Quick Solution
-The ``category`` parameter is vulnerable to XSS, use a **UNION** attack to retrieve the number of columns, the payload is simply:
+The ``category`` parameter is vulnerable to SQL Injection, use a **UNION** attack to retrieve the number of columns, the payload is simply:
 ```
 # Keep adding NULL until the error disappears
 '+UNION+SELECT+NULL,NULL--
@@ -25,3 +26,23 @@ The ``category`` parameter is vulnerable to XSS, use a **UNION** attack to retri
 '+UNION+SELECT+NULL,NULL--
 ```
 4. Continue adding null values until the error disappears and the response includes additional content containing the null values.
+
+## SQL injection UNION attack, finding a column containing text
+Reference: https://portswigger.net/web-security/sql-injection/union-attacks/lab-find-column-containing-text
+
+<!-- omit in toc -->
+### Quick Solution
+The ``category`` parameter is vulnerable to SQL Injection, combine the previous payload to retrieve the number of columns and then change the ``NULL`` value one by one with a random string to find a column that contains text. Payload in the next section
+
+<!-- omit in toc -->
+### Solution
+1. Use Burp Suite to intercept and modify the request that sets the product category filter.
+2. Determine the number of columns that are being returned by the query. Verify that the query is returning three columns, using the following payload in the ``category`` parameter: 
+```
+'+UNION+SELECT+NULL,NULL,NULL--
+```
+3. Try replacing each null with the random value provided by the lab, for example: 
+```
+'+UNION+SELECT+'abcdef',NULL,NULL--
+```
+4. If an error occurs, move on to the next null and try that instead.
