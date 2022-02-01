@@ -6,6 +6,7 @@
 
 - [SQL injection UNION attack, determining the number of columns returned by the query](#sql-injection-union-attack-determining-the-number-of-columns-returned-by-the-query)
 - [SQL injection UNION attack, finding a column containing text](#sql-injection-union-attack-finding-a-column-containing-text)
+- [SQL injection UNION attack, retrieving data from other tables](#sql-injection-union-attack-retrieving-data-from-other-tables)
 
 ## SQL injection UNION attack, determining the number of columns returned by the query
 Reference: https://portswigger.net/web-security/sql-injection/union-attacks/lab-determine-number-of-columns
@@ -46,3 +47,26 @@ The ``category`` parameter is vulnerable to SQL Injection, combine the previous 
 '+UNION+SELECT+'abcdef',NULL,NULL--
 ```
 4. If an error occurs, move on to the next null and try that instead.
+
+## SQL injection UNION attack, retrieving data from other tables
+Reference: https://portswigger.net/web-security/sql-injection/union-attacks/lab-retrieve-data-from-other-tables
+
+<!-- omit in toc -->
+### Quick Solution
+Use the previous payloads to retrieve the number of columns and which columns contain text data. The description says that there is a ``users`` table with columns called ``username`` and ``password``. Use the following payload to retrieve the contents of ``users`` table:
+```
+'+UNION+SELECT+username,+password+FROM+users--
+```
+
+<!-- omit in toc -->
+### Solution
+1. Use Burp Suite to intercept and modify the request that sets the product category filter.
+2. Determine the number of columns that are being returned by the query and which columns contain text data. Verify that the query is returning two columns, both of which contain text, using a payload like the following in the category parameter: 
+```
+'+UNION+SELECT+'abc','def'--.
+```
+3. Use the following payload to retrieve the contents of the users table: 
+```
+'+UNION+SELECT+username,+password+FROM+users--
+```
+4. Verify that the application's response contains usernames and passwords.
