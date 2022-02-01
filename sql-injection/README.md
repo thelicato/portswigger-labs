@@ -7,6 +7,7 @@
 - [SQL injection UNION attack, determining the number of columns returned by the query](#sql-injection-union-attack-determining-the-number-of-columns-returned-by-the-query)
 - [SQL injection UNION attack, finding a column containing text](#sql-injection-union-attack-finding-a-column-containing-text)
 - [SQL injection UNION attack, retrieving data from other tables](#sql-injection-union-attack-retrieving-data-from-other-tables)
+- [SQL injection UNION attack, retrieving multiple values in a single column](#sql-injection-union-attack-retrieving-multiple-values-in-a-single-column)
 
 ## SQL injection UNION attack, determining the number of columns returned by the query
 Reference: https://portswigger.net/web-security/sql-injection/union-attacks/lab-determine-number-of-columns
@@ -68,5 +69,28 @@ Use the previous payloads to retrieve the number of columns and which columns co
 3. Use the following payload to retrieve the contents of the users table: 
 ```
 '+UNION+SELECT+username,+password+FROM+users--
+```
+4. Verify that the application's response contains usernames and passwords.
+
+## SQL injection UNION attack, retrieving multiple values in a single column
+Reference: https://portswigger.net/web-security/sql-injection/union-attacks/lab-retrieve-multiple-values-in-single-column
+
+<!-- omit in toc -->
+### Quick Solution
+The original query returns two colums, but only one contains text. Multiple values can be retrieved together including a suitable separator to let distinguish the combined values. The payload for this lab is the following:
+```
+' UNION SELECT username || '~' || password FROM users--
+```
+
+<!-- omit in toc -->
+### Solution
+1. Use Burp Suite to intercept and modify the request that sets the product category filter.
+2. Determine the number of columns that are being returned by the query and which columns contain text data. Verify that the query is returning two columns, only one of which contain text, using a payload like the following in the ``category`` parameter: 
+```
+'+UNION+SELECT+NULL,'abc'--
+```
+3. Use the following payload to retrieve the contents of the users table: 
+```
+'+UNION+SELECT+NULL,username||'~'||password+FROM+users--
 ```
 4. Verify that the application's response contains usernames and passwords.
