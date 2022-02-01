@@ -23,7 +23,15 @@ Reference: https://portswigger.net/web-security/clickjacking/lab-prefilled-form-
 Similar to the previous lab, the only difference is that I had to prefill the input form data. Look at the ``input_data_prefilled.html`` file in the ``exploits`` directory.
 
 ## Clickjacking with a frame buster script
+Reference: https://portswigger.net/web-security/clickjacking/lab-frame-buster-script
 
 <!-- omit in toc -->
 ### Quick Solution
 The exploit is **exactly** the same of the previous lab. The only difference is that the target website uses **frame busting**. This technique can easily be circumvented with the ``sandbox="allow-forms"`` attribute. Look at the ``frame_buster_script.html`` file in the ``exploits`` directory.
+
+# Exploiting clickjacking vulnerability to trigger DOM-based XSS
+Reference: https://portswigger.net/web-security/clickjacking/lab-exploiting-to-trigger-dom-based-xss
+
+<!-- omit in toc -->
+### Quick Solution
+In this case there is a *Submit a feedback* page that contains a DOM-based XSS vulnerability. So the only difference in this lab is that we have to prefill the input with an XSS payload. Look at the ``dom_based_xss.html`` file in the ``exploits`` directory.
