@@ -14,6 +14,7 @@
 - [SQL injection attack, listing the database contents on Oracle](#sql-injection-attack-listing-the-database-contents-on-oracle)
 - [Blind SQL injection with conditional responses](#blind-sql-injection-with-conditional-responses)
 - [Blind SQL injection with conditional errors](#blind-sql-injection-with-conditional-errors)
+- [Blind SQL injection with time delays](#blind-sql-injection-with-time-delays)
 
 ## SQL injection UNION attack, determining the number of columns returned by the query
 Reference: https://portswigger.net/web-security/sql-injection/union-attacks/lab-determine-number-of-columns
@@ -256,3 +257,19 @@ docker run -it --rm secsi/sqlmap -u "<target_url>" --cookie="TrackingId=1" -p "T
 <!-- omit in toc -->
 ### Solution
 The solution is **extremely long** and it has not been copied, see the reference link.
+
+## Blind SQL injection with time delays
+Reference: https://acd71f421faa06c4c0601db1008a000e.web-security-academy.net/
+
+<!-- omit in toc -->
+### Quick Solution
+For this lab it is only needed to observe that the DB is vulnerable to SQL injection with time delay, see the solution in the next section.                          
+
+<!-- omit in toc -->
+### Solution
+1. Visit the front page of the shop, and use Burp Suite to intercept and modify the request containing the TrackingId cookie.
+2. Modify the TrackingId cookie, changing it to: 
+```
+TrackingId=x'||pg_sleep(10)--
+```
+3. Submit the request and observe that the application takes 10 seconds to respond.
