@@ -10,6 +10,7 @@
 - [DOM XSS in document.write sink using source location.search inside a select element](#dom-xss-in-documentwrite-sink-using-source-locationsearch-inside-a-select-element)
 - [DOM XSS in innerHTML sink using source location.search](#dom-xss-in-innerhtml-sink-using-source-locationsearch)
 - [DOM XSS in jQuery anchor href attribute sink using location.search source](#dom-xss-in-jquery-anchor-href-attribute-sink-using-locationsearch-source)
+- [DOM XSS in jQuery selector sink using a hashchange event](#dom-xss-in-jquery-selector-sink-using-a-hashchange-event)
 
 ## Reflected XSS into HTML context with nothing encoded
 Reference: https://portswigger.net/web-security/cross-site-scripting/reflected/lab-html-context-nothing-encoded
@@ -84,3 +85,17 @@ Reference: https://portswigger.net/web-security/cross-site-scripting/dom-based/l
 1. On the Submit feedback page, change the query parameter `returnPath` to / followed by a random alphanumeric string.
 2. Right-click and inspect the element, and observe that your random string has been placed inside an a ``href`` attribute.
 3. Change ``returnPath`` to ``javascript:alert(document.cookie)``, then hit enter and click "back".
+
+## DOM XSS in jQuery selector sink using a hashchange event
+Reference: https://portswigger.net/web-security/cross-site-scripting/dom-based/lab-jquery-selector-hash-change-event
+
+<!-- omit in toc -->
+### Solution
+1. Notice the vulnerable code on the home page using Burp or your browser's DevTools.
+2. From the lab banner, open the exploit server.
+3. In the **Body** section, add the following malicious `iframe`:
+```
+<iframe src="https://YOUR-LAB-ID.web-security-academy.net/#" onload="this.src+='<img src=x onerror=print()>'"></iframe>
+```
+4. Store the exploit, then click **View exploit** to confirm that the ``print()`` function is called.
+Go back to the exploit server and click **Deliver to victim** to solve the lab.
