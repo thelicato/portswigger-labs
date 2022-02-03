@@ -19,6 +19,7 @@
 - [Blind SQL injection with out-of-band interaction](#blind-sql-injection-with-out-of-band-interaction)
 - [Blind SQL injection with out-of-band data exfiltration](#blind-sql-injection-with-out-of-band-data-exfiltration)
 - [SQL injection vulnerability in WHERE clause allowing retrieval of hidden data](#sql-injection-vulnerability-in-where-clause-allowing-retrieval-of-hidden-data)
+- [Lab: SQL injection vulnerability allowing login bypass](#lab-sql-injection-vulnerability-allowing-login-bypass)
 
 ## SQL injection UNION attack, determining the number of columns returned by the query
 Reference: https://portswigger.net/web-security/sql-injection/union-attacks/lab-determine-number-of-columns
@@ -339,7 +340,19 @@ Reference: https://portswigger.net/web-security/sql-injection/lab-retrieve-hidde
 In this lab the payload is quite easy, the goal is to retrieve hidden items. See next section for the solution.
 
 <!-- omit in toc -->
-### Solutionù
+### Solution
 1. Use Burp Suite to intercept and modify the request that sets the product category filter.
 2. Modify the ``category`` parameter, giving it the value ``'+OR+1=1--``
 3. Submit the request, and verify that the response now contains additional items.
+
+## Lab: SQL injection vulnerability allowing login bypass
+Reference: https://portswigger.net/web-security/sql-injection/lab-login-bypass
+
+<!-- omit in toc -->
+### Quick Solution
+In this lab the payload is quite easy, the goal is to login as ``administrator``. See next section for the solution.
+
+<!-- omit in toc -->
+### Solution
+1. Use Burp Suite to intercept and modify the login request.
+2. Modify the ``username`` parameter, giving it the value: ``administrator'--``
