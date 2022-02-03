@@ -18,6 +18,7 @@
 - [Blind SQL injection with time delays and information retrieval](#blind-sql-injection-with-time-delays-and-information-retrieval)
 - [Blind SQL injection with out-of-band interaction](#blind-sql-injection-with-out-of-band-interaction)
 - [Blind SQL injection with out-of-band data exfiltration](#blind-sql-injection-with-out-of-band-data-exfiltration)
+- [SQL injection vulnerability in WHERE clause allowing retrieval of hidden data](#sql-injection-vulnerability-in-where-clause-allowing-retrieval-of-hidden-data)
 
 ## SQL injection UNION attack, determining the number of columns returned by the query
 Reference: https://portswigger.net/web-security/sql-injection/union-attacks/lab-determine-number-of-columns
@@ -329,3 +330,16 @@ TrackingId=x'+UNION+SELECT+EXTRACTVALUE(xmltype('<%3fxml+version%3d"1.0"+encodin
 5. Go back to the Burp Collaborator client window, and click "Poll now". If you don't see any interactions listed, wait a few seconds and try again, since the server-side query is executed asynchronously.
 6. You should see some DNS and HTTP interactions that were initiated by the application as the result of your payload. The password of the ``administrator`` user should appear in the subdomain of the interaction, and you can view this within the Burp Collaborator client. For DNS interactions, the full domain name that was looked up is shown in the Description tab. For HTTP interactions, the full domain name is shown in the Host header in the Request to Collaborator tab.
 7. In your browser, click "My account" to open the login page. Use the password to log in as the ``administrator`` user.
+
+## SQL injection vulnerability in WHERE clause allowing retrieval of hidden data
+Reference: https://portswigger.net/web-security/sql-injection/lab-retrieve-hidden-data
+
+<!-- omit in toc -->
+### Quick Solution
+In this lab the payload is quite easy, the goal is to retrieve hidden items. See next section for the solution.
+
+<!-- omit in toc -->
+### Solutionù
+1. Use Burp Suite to intercept and modify the request that sets the product category filter.
+2. Modify the ``category`` parameter, giving it the value ``'+OR+1=1--``
+3. Submit the request, and verify that the response now contains additional items.
