@@ -11,6 +11,7 @@
 - [DOM XSS in innerHTML sink using source location.search](#dom-xss-in-innerhtml-sink-using-source-locationsearch)
 - [DOM XSS in jQuery anchor href attribute sink using location.search source](#dom-xss-in-jquery-anchor-href-attribute-sink-using-locationsearch-source)
 - [DOM XSS in jQuery selector sink using a hashchange event](#dom-xss-in-jquery-selector-sink-using-a-hashchange-event)
+- [DOM XSS in AngularJS expression with angle brackets and double quotes HTML-encoded](#dom-xss-in-angularjs-expression-with-angle-brackets-and-double-quotes-html-encoded)
 
 ## Reflected XSS into HTML context with nothing encoded
 Reference: https://portswigger.net/web-security/cross-site-scripting/reflected/lab-html-context-nothing-encoded
@@ -99,3 +100,25 @@ Reference: https://portswigger.net/web-security/cross-site-scripting/dom-based/l
 ```
 4. Store the exploit, then click **View exploit** to confirm that the ``print()`` function is called.
 Go back to the exploit server and click **Deliver to victim** to solve the lab.
+
+## DOM XSS in AngularJS expression with angle brackets and double quotes HTML-encoded
+Reference: https://portswigger.net/web-security/cross-site-scripting/dom-based/lab-angularjs-expression
+
+<!-- omit in toc -->
+## Quick Solution
+Detect that *AngularJS* is used on the website. Then you can simply test different XSS payloads for AngularJS. This is an interesting source for them: https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/XSS%20Injection/XSS%20in%20Angular.md
+
+A payload that works is the following:
+```
+{{constructor.constructor('alert(1)')()}}
+```
+
+<!-- omit in toc -->
+### Solution
+1. Enter a random alphanumeric string into the search box.
+2. View the page source and observe that your random string is enclosed in an ``ng-app`` directive.
+3. Enter the following AngularJS expression in the search box:
+```
+{{$on.constructor('alert(1)')()}}
+```
+4. Click search
