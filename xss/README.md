@@ -7,6 +7,7 @@
 - [Reflected XSS into HTML context with nothing encoded](#reflected-xss-into-html-context-with-nothing-encoded)
 - [Stored XSS into HTML context with nothing encoded](#stored-xss-into-html-context-with-nothing-encoded)
 - [DOM XSS in document.write sink using source location.search](#dom-xss-in-documentwrite-sink-using-source-locationsearch)
+- [DOM XSS in document.write sink using source location.search inside a select element](#dom-xss-in-documentwrite-sink-using-source-locationsearch-inside-a-select-element)
 
 ## Reflected XSS into HTML context with nothing encoded
 Reference: https://portswigger.net/web-security/cross-site-scripting/reflected/lab-html-context-nothing-encoded
@@ -42,3 +43,24 @@ Reference: https://portswigger.net/web-security/cross-site-scripting/dom-based/l
 1. Enter a random alphanumeric string into the search box.
 2. Right-click and inspect the element, and observe that your random string has been placed inside an ``img src`` attribute.
 3. Break out of the img attribute by searching for: ``"><svg onload=alert(1)>``
+
+## DOM XSS in document.write sink using source location.search inside a select element
+Reference: https://portswigger.net/web-security/cross-site-scripting/dom-based/lab-document-write-sink-inside-select-element
+
+<!-- omit in toc -->
+### Quick Solution
+The lab description says that there is a vulnerability in the stock checker functionality. The ``document.write`` function is called with data from ``location.search`` that extracts a ``storeId`` parameter. Adding it to the URL can trigger the vulnerability:
+```
+product?productId=1&storeId="></select><img%20src=1%20onerror=alert(1)>
+```
+
+<!-- omit in toc -->
+### Solution
+1. On the product pages, notice that the dangerous JavaScript extracts a ``storeId`` parameter from the ``location.search`` source. It then uses ``document.write`` to create a new option in the select element for the stock checker functionality.
+2. Add a ``storeId`` query parameter to the URL and enter a random alphanumeric string as its value. Request this modified URL.
+3. In your browser, notice that your random string is now listed as one of the options in the drop-down list.
+4. Right-click and inspect the drop-down list to confirm that the value of your ``storeId`` parameter has been placed inside a select element.
+5. Change the URL to include a suitable XSS payload inside the ``storeId`` parameter as follows:
+```
+product?productId=1&storeId="></select><img%20src=1%20onerror=alert(1)>
+```
