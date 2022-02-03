@@ -9,6 +9,7 @@
 - [DOM XSS in document.write sink using source location.search](#dom-xss-in-documentwrite-sink-using-source-locationsearch)
 - [DOM XSS in document.write sink using source location.search inside a select element](#dom-xss-in-documentwrite-sink-using-source-locationsearch-inside-a-select-element)
 - [DOM XSS in innerHTML sink using source location.search](#dom-xss-in-innerhtml-sink-using-source-locationsearch)
+- [DOM XSS in jQuery anchor href attribute sink using location.search source](#dom-xss-in-jquery-anchor-href-attribute-sink-using-locationsearch-source)
 
 ## Reflected XSS into HTML context with nothing encoded
 Reference: https://portswigger.net/web-security/cross-site-scripting/reflected/lab-html-context-nothing-encoded
@@ -74,3 +75,12 @@ Reference: https://portswigger.net/web-security/cross-site-scripting/dom-based/l
 1. Enter the following into the into the search box: ``<img src=1 onerror=alert(1)>``
 2. Click "Search".
 The value of the ``src`` attribute is invalid and throws an error. This triggers the ``onerror`` event handler, which then calls the ``alert()`` function. As a result, the payload is executed whenever the user's browser attempts to load the page containing your malicious post.
+
+## DOM XSS in jQuery anchor href attribute sink using location.search source
+Reference: https://portswigger.net/web-security/cross-site-scripting/dom-based/lab-jquery-href-attribute-sink
+
+<!-- omit in toc -->
+### Solution
+1. On the Submit feedback page, change the query parameter `returnPath` to / followed by a random alphanumeric string.
+2. Right-click and inspect the element, and observe that your random string has been placed inside an a ``href`` attribute.
+3. Change ``returnPath`` to ``javascript:alert(document.cookie)``, then hit enter and click "back".
