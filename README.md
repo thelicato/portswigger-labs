@@ -9,6 +9,7 @@ This repo has been created to keep in a single place all the solutions of the la
 The tools needed (other than Burp Pro) to complete the labs.
 
 - **SQL Injection**: ``sqlmap``;
+- **XSS**: ``dalfox``, ``xsstrike``;
 - **Clickjacking**: None;
 - **CORS**: None;
 - **WebSockets**: None;
