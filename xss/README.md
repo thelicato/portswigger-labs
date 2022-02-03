@@ -6,6 +6,7 @@
 
 - [Reflected XSS into HTML context with nothing encoded](#reflected-xss-into-html-context-with-nothing-encoded)
 - [Stored XSS into HTML context with nothing encoded](#stored-xss-into-html-context-with-nothing-encoded)
+- [DOM XSS in document.write sink using source location.search](#dom-xss-in-documentwrite-sink-using-source-locationsearch)
 
 ## Reflected XSS into HTML context with nothing encoded
 Reference: https://portswigger.net/web-security/cross-site-scripting/reflected/lab-html-context-nothing-encoded
@@ -32,3 +33,12 @@ The requests can also be proxied to Burp by adding ``--proxy <proxy_url>``
 2. Enter a name, email and website.
 3. Click "Post comment".
 4. Go back to the blog.
+
+## DOM XSS in document.write sink using source location.search
+Reference: https://portswigger.net/web-security/cross-site-scripting/dom-based/lab-document-write-sink
+
+<!-- omit in toc -->
+### Solution
+1. Enter a random alphanumeric string into the search box.
+2. Right-click and inspect the element, and observe that your random string has been placed inside an ``img src`` attribute.
+3. Break out of the img attribute by searching for: ``"><svg onload=alert(1)>``
