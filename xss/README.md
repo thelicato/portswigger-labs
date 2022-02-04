@@ -13,6 +13,7 @@
 - [DOM XSS in jQuery selector sink using a hashchange event](#dom-xss-in-jquery-selector-sink-using-a-hashchange-event)
 - [DOM XSS in AngularJS expression with angle brackets and double quotes HTML-encoded](#dom-xss-in-angularjs-expression-with-angle-brackets-and-double-quotes-html-encoded)
 - [Reflected DOM XSS](#reflected-dom-xss)
+- [Stored DOM XSS](#stored-dom-xss)
 
 ## Reflected XSS into HTML context with nothing encoded
 Reference: https://portswigger.net/web-security/cross-site-scripting/reflected/lab-html-context-nothing-encoded
@@ -149,3 +150,15 @@ An arithmetic operator (in this case the subtraction operator) is then used to s
 ```
 {"searchTerm":"\\"-alert(1)}//", "results":[]}
 ```
+
+## Stored DOM XSS
+Reference: https://portswigger.net/web-security/cross-site-scripting/dom-based/lab-dom-xss-stored
+
+<!-- omit in toc -->
+### Solution
+Post a comment containing the following vector:
+```
+<><img src=1 onerror=alert(1)>
+```
+
+In an attempt to prevent XSS, the website uses the JavaScript replace() function to encode angle brackets. However, when the first argument is a string, the function only replaces the first occurrence. We exploit this vulnerability by simply including an extra set of angle brackets at the beginning of the comment. These angle brackets will be encoded, but any subsequent angle brackets will be unaffected, enabling us to effectively bypass the filter and inject HTML.
