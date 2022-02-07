@@ -26,6 +26,7 @@
 - [Reflected XSS into a JavaScript string with single quote and backslash escaped](#reflected-xss-into-a-javascript-string-with-single-quote-and-backslash-escaped)
 - [Reflected XSS into a JavaScript string with angle brackets HTML encoded](#reflected-xss-into-a-javascript-string-with-angle-brackets-html-encoded)
 - [Reflected XSS into a JavaScript string with angle brackets and double quotes HTML-encoded and single quotes escaped](#reflected-xss-into-a-javascript-string-with-angle-brackets-and-double-quotes-html-encoded-and-single-quotes-escaped)
+- [Stored XSS into onclick event with angle brackets and double quotes HTML-encoded and single quotes and backslash escaped](#stored-xss-into-onclick-event-with-angle-brackets-and-double-quotes-html-encoded-and-single-quotes-and-backslash-escaped)
 
 ## Reflected XSS into HTML context with nothing encoded
 Reference: https://portswigger.net/web-security/cross-site-scripting/reflected/lab-html-context-nothing-encoded
@@ -413,3 +414,14 @@ Reference: https://portswigger.net/web-security/cross-site-scripting/contexts/la
 4. Try sending the payload ``test\payload`` and observe that your backslash doesn't get escaped.
 5. Replace your input with the following payload to break out of the JavaScript string and inject an alert: ``\'-alert(1)//``
 6. Verify the technique worked by right clicking, selecting "Copy URL", and pasting the URL in your browser. When you load the page it should trigger an alert.
+
+## Stored XSS into onclick event with angle brackets and double quotes HTML-encoded and single quotes and backslash escaped
+Reference: https://portswigger.net/web-security/cross-site-scripting/contexts/lab-onclick-event-angle-brackets-double-quotes-html-encoded-single-quotes-backslash-escaped
+
+<!-- omit in toc -->
+### Solution
+1. Post a comment with a random alphanumeric string in the "Website" input, then use Burp Suite to intercept the request and send it to Burp Repeater.
+2. Make a second request in the browser to view the post and use Burp Suite to intercept the request and send it to Burp Repeater.
+3. Observe that the random string in the second Repeater tab has been reflected inside an ``onclick`` event handler attribute.
+4. Repeat the process again but this time modify your input to inject a JavaScript URL that calls ``alert``, using the following payload: ``http://foo?&apos;-alert(1)-&apos;``
+5. Verify the technique worked by right clicking, selecting "Copy URL", and pasting the URL in your browser. Clicking the name above your comment should trigger an alert.
