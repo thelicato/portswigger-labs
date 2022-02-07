@@ -21,6 +21,7 @@
 - [Reflected XSS into HTML context with all tags blocked except custom ones](#reflected-xss-into-html-context-with-all-tags-blocked-except-custom-ones)
 - [Reflected XSS with some SVG markup allowed](#reflected-xss-with-some-svg-markup-allowed)
 - [Reflected XSS into attribute with angle brackets HTML-encoded](#reflected-xss-into-attribute-with-angle-brackets-html-encoded)
+- [Stored XSS into anchor href attribute with double quotes HTML-encoded](#stored-xss-into-anchor-href-attribute-with-double-quotes-html-encoded)
 
 ## Reflected XSS into HTML context with nothing encoded
 Reference: https://portswigger.net/web-security/cross-site-scripting/reflected/lab-html-context-nothing-encoded
@@ -335,3 +336,14 @@ Reference: https://portswigger.net/web-security/cross-site-scripting/contexts/la
 2. Observe that the random string has been reflected inside a quoted attribute.
 3. Replace your input with the following payload to escape the quoted attribute and inject an event handler: **"onmouseover="alert(1)**
 4. Verify the technique worked by right-clicking, selecting "Copy URL", and pasting the URL in your browser. When you move the mouse over the injected element it should trigger an alert.
+
+## Stored XSS into anchor href attribute with double quotes HTML-encoded
+Reference: https://portswigger.net/web-security/cross-site-scripting/contexts/lab-href-attribute-double-quotes-html-encoded
+
+<!-- omit in toc -->
+### Solution
+1. Post a comment with a random alphanumeric string in the "Website" input, then use Burp Suite to intercept the request and send it to Burp Repeater.
+2. Make a second request in the browser to view the post and use Burp Suite to intercept the request and send it to Burp Repeater.
+3. Observe that the random string in the second Repeater tab has been reflected inside an anchor href attribute.
+4. Repeat the process again but this time replace your input with the following payload to inject a JavaScript URL that calls alert: ``javascript:alert(1)``
+5. Verify the technique worked by right clicking, selecting "Copy URL", and pasting the URL in your browser. Clicking the name above your comment should trigger an alert.
