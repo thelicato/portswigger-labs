@@ -25,6 +25,7 @@
 - [Reflected XSS in canonical link tag](#reflected-xss-in-canonical-link-tag)
 - [Reflected XSS into a JavaScript string with single quote and backslash escaped](#reflected-xss-into-a-javascript-string-with-single-quote-and-backslash-escaped)
 - [Reflected XSS into a JavaScript string with angle brackets HTML encoded](#reflected-xss-into-a-javascript-string-with-angle-brackets-html-encoded)
+- [Reflected XSS into a JavaScript string with angle brackets and double quotes HTML-encoded and single quotes escaped](#reflected-xss-into-a-javascript-string-with-angle-brackets-and-double-quotes-html-encoded-and-single-quotes-escaped)
 
 ## Reflected XSS into HTML context with nothing encoded
 Reference: https://portswigger.net/web-security/cross-site-scripting/reflected/lab-html-context-nothing-encoded
@@ -400,3 +401,15 @@ Reference: https://portswigger.net/web-security/cross-site-scripting/contexts/la
 2. Observe that the random string has been reflected inside a JavaScript string.
 3. Replace your input with the following payload to break out of the JavaScript string and inject an alert: ``'-alert(1)-'``
 4. Verify the technique worked by right clicking, selecting "Copy URL", and pasting the URL in your browser. When you load the page it should trigger an alert.
+
+## Reflected XSS into a JavaScript string with angle brackets and double quotes HTML-encoded and single quotes escaped
+Reference: https://portswigger.net/web-security/cross-site-scripting/contexts/lab-javascript-string-angle-brackets-double-quotes-encoded-single-quotes-escaped
+
+<!-- omit in toc -->
+### Solution
+1. Submit a random alphanumeric string in the search box, then use Burp Suite to intercept the search request and send it to Burp Repeater.
+2. Observe that the random string has been reflected inside a JavaScript string.
+3. Try sending the payload ``test'payload`` and observe that your single quote gets backslash-escaped, preventing you from breaking out of the string.
+4. Try sending the payload ``test\payload`` and observe that your backslash doesn't get escaped.
+5. Replace your input with the following payload to break out of the JavaScript string and inject an alert: ``\'-alert(1)//``
+6. Verify the technique worked by right clicking, selecting "Copy URL", and pasting the URL in your browser. When you load the page it should trigger an alert.
