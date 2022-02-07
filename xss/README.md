@@ -23,6 +23,7 @@
 - [Reflected XSS into attribute with angle brackets HTML-encoded](#reflected-xss-into-attribute-with-angle-brackets-html-encoded)
 - [Stored XSS into anchor href attribute with double quotes HTML-encoded](#stored-xss-into-anchor-href-attribute-with-double-quotes-html-encoded)
 - [Reflected XSS in canonical link tag](#reflected-xss-in-canonical-link-tag)
+- [Reflected XSS into a JavaScript string with single quote and backslash escaped](#reflected-xss-into-a-javascript-string-with-single-quote-and-backslash-escaped)
 
 ## Reflected XSS into HTML context with nothing encoded
 Reference: https://portswigger.net/web-security/cross-site-scripting/reflected/lab-html-context-nothing-encoded
@@ -367,3 +368,25 @@ This sets the ``X`` key as an access key for the whole page. When a user presses
  - On Windows: ``ALT+SHIFT+X``
  - On MacOS: ``CTRL+ALT+X``
  - On Linux: ``Alt+X``
+
+## Reflected XSS into a JavaScript string with single quote and backslash escaped
+Reference: https://portswigger.net/web-security/cross-site-scripting/contexts/lab-javascript-string-single-quote-backslash-escaped
+
+<!-- omit in toc -->
+### Quick Solution
+This lab can be easily solved using ``dalfox``, in this example I'm using the dockerized version:
+```
+docker run -it --rm secsi/dalfox url "<lab_url>/?search=thelicato> -w 10
+```
+
+<!-- omit in toc -->
+### Solution
+1. Submit a random alphanumeric string in the search box, then use Burp Suite to intercept the search request and send it to Burp Repeater.
+2. Observe that the random string has been reflected inside a JavaScript string.
+3. Try sending the payload ``test'payload`` and observe that your single quote gets backslash-escaped, preventing you from breaking out of the string.
+4. Replace your input with the following payload to break out of the script block and inject a new script: 
+```
+</script><script>alert(1)</script>
+```
+5. Verify the technique worked by right clicking, selecting "Copy URL", and pasting the URL in your browser. When you load the page it should trigger an alert.
+
