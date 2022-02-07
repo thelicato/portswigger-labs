@@ -7,6 +7,7 @@
 - [CSRF vulnerability with no defenses](#csrf-vulnerability-with-no-defenses)
 - [CSRF where token validation depends on request method](#csrf-where-token-validation-depends-on-request-method)
 - [CSRF where token validation depends on token being present](#csrf-where-token-validation-depends-on-token-being-present)
+- [CSRF where token is not tied to user session](#csrf-where-token-is-not-tied-to-user-session)
 
 ## CSRF vulnerability with no defenses
 Reference: https://portswigger.net/web-security/csrf/lab-no-defenses
@@ -83,3 +84,19 @@ Alternatively, if you're using Burp Suite Community Edition, use the following H
 5. Go to the exploit server, paste your exploit HTML into the "Body" section, and click "Store".
 6. To verify if the exploit will work, try it on yourself by clicking "View exploit" and checking the resulting HTTP request and response.
 7. Click "Deliver to victim" to solve the lab.
+
+## CSRF where token is not tied to user session
+Reference: https://portswigger.net/web-security/csrf/lab-token-not-tied-to-user-session
+
+<!-- omit in toc -->
+### Quick Solution
+In this case there is a **CSRF token**, but it is not tied to user session. To exploit this one intercept a request, note the ``csrf`` value, generate a PoC and deliver it to the victim (without forwarding the initial request).
+
+<!-- omit in toc -->
+### Solution
+1. With your browser proxying traffic through Burp Suite, log in to your account, submit the "Update email" form, and intercept the resulting request.
+2. Make a note of the value of the CSRF token, then drop the request.
+3. Open a private/incognito browser window, log in to your other account, and send the update email request into Burp Repeater.
+4. Observe that if you swap the CSRF token with the value from the other account, then the request is accepted.
+5. Create and host a proof of concept exploit as described in the solution to the CSRF vulnerability with no defenses lab. Note that the CSRF tokens are single-use, so you'll need to include a fresh one.
+6. Store the exploit, then click "Deliver to victim" to solve the lab.
