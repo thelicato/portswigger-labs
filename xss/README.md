@@ -27,6 +27,7 @@
 - [Reflected XSS into a JavaScript string with angle brackets HTML encoded](#reflected-xss-into-a-javascript-string-with-angle-brackets-html-encoded)
 - [Reflected XSS into a JavaScript string with angle brackets and double quotes HTML-encoded and single quotes escaped](#reflected-xss-into-a-javascript-string-with-angle-brackets-and-double-quotes-html-encoded-and-single-quotes-escaped)
 - [Stored XSS into onclick event with angle brackets and double quotes HTML-encoded and single quotes and backslash escaped](#stored-xss-into-onclick-event-with-angle-brackets-and-double-quotes-html-encoded-and-single-quotes-and-backslash-escaped)
+- [Reflected XSS into a template literal with angle brackets, single, double quotes, backslash and backticks Unicode-escaped](#reflected-xss-into-a-template-literal-with-angle-brackets-single-double-quotes-backslash-and-backticks-unicode-escaped)
 
 ## Reflected XSS into HTML context with nothing encoded
 Reference: https://portswigger.net/web-security/cross-site-scripting/reflected/lab-html-context-nothing-encoded
@@ -425,3 +426,20 @@ Reference: https://portswigger.net/web-security/cross-site-scripting/contexts/la
 3. Observe that the random string in the second Repeater tab has been reflected inside an ``onclick`` event handler attribute.
 4. Repeat the process again but this time modify your input to inject a JavaScript URL that calls ``alert``, using the following payload: ``http://foo?&apos;-alert(1)-&apos;``
 5. Verify the technique worked by right clicking, selecting "Copy URL", and pasting the URL in your browser. Clicking the name above your comment should trigger an alert.
+
+## Reflected XSS into a template literal with angle brackets, single, double quotes, backslash and backticks Unicode-escaped
+Reference: https://portswigger.net/web-security/cross-site-scripting/contexts/lab-javascript-template-literal-angle-brackets-single-double-quotes-backslash-backticks-escaped
+
+<!-- omit in toc -->
+### Quick Solution
+This lab contains a reflected XSS. The searched text gets reflected inside a **template string**, so it is pretty easy to exploit just by typing:
+```
+${alert(1)}
+```
+
+<!-- omit in toc -->
+### Solution
+1. Submit a random alphanumeric string in the search box, then use Burp Suite to intercept the search request and send it to Burp Repeater.
+2. Observe that the random string has been reflected inside a JavaScript template string.
+3. Replace your input with the following payload to execute JavaScript inside the template string: ``${alert(1)}``
+4. Verify the technique worked by right clicking, selecting "Copy URL", and pasting the URL in your browser. When you load the page it should trigger an alert.
