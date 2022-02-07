@@ -19,7 +19,7 @@ The tools needed (other than Burp Pro) to complete the labs.
 ## Roadmap
 This primary goal is to add the **Apprentice** and **Practitioner** level labs (since are the ones suggested to complete before taking the exam):
 - [x] SQL Injection Labs
-- [ ] XSS Labs
+- [x] XSS Labs
 - [ ] CSRF Labs
 - [x] Clickjacking Labs
 - [ ] DOM-based vulnerabilities Labs
