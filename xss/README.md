@@ -22,6 +22,7 @@
 - [Reflected XSS with some SVG markup allowed](#reflected-xss-with-some-svg-markup-allowed)
 - [Reflected XSS into attribute with angle brackets HTML-encoded](#reflected-xss-into-attribute-with-angle-brackets-html-encoded)
 - [Stored XSS into anchor href attribute with double quotes HTML-encoded](#stored-xss-into-anchor-href-attribute-with-double-quotes-html-encoded)
+- [Reflected XSS in canonical link tag](#reflected-xss-in-canonical-link-tag)
 
 ## Reflected XSS into HTML context with nothing encoded
 Reference: https://portswigger.net/web-security/cross-site-scripting/reflected/lab-html-context-nothing-encoded
@@ -347,3 +348,22 @@ Reference: https://portswigger.net/web-security/cross-site-scripting/contexts/la
 3. Observe that the random string in the second Repeater tab has been reflected inside an anchor href attribute.
 4. Repeat the process again but this time replace your input with the following payload to inject a JavaScript URL that calls alert: ``javascript:alert(1)``
 5. Verify the technique worked by right clicking, selecting "Copy URL", and pasting the URL in your browser. Clicking the name above your comment should trigger an alert.
+
+## Reflected XSS in canonical link tag
+Reference: https://portswigger.net/web-security/cross-site-scripting/contexts/lab-canonical-link-tag
+
+<!-- omit in toc -->
+### A bit of theory
+The ``HTMLElement.accessKey`` property sets the keystroke which a user can press to jump to a given element.
+
+<!-- omit in toc -->
+### Solution
+1. Visit the following URL, replacing ``your-lab-id`` with your lab ID:
+```
+https://your-lab-id.web-security-academy.net/?%27accesskey=%27x%27onclick=%27alert(1)
+```
+This sets the ``X`` key as an access key for the whole page. When a user presses the access key, the ``alert`` function is called.
+2.To trigger the exploit on yourself, press one of the following key combinations:
+ - On Windows: ``ALT+SHIFT+X``
+ - On MacOS: ``CTRL+ALT+X``
+ - On Linux: ``Alt+X``
