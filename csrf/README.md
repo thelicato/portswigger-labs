@@ -11,6 +11,7 @@
 - [CSRF where token is tied to non-session cookie](#csrf-where-token-is-tied-to-non-session-cookie)
 - [CSRF where token is duplicated in cookie](#csrf-where-token-is-duplicated-in-cookie)
 - [CSRF where Referer validation depends on header being present](#csrf-where-referer-validation-depends-on-header-being-present)
+- [CSRF with broken Referer validation](#csrf-with-broken-referer-validation)
 
 ## CSRF vulnerability with no defenses
 Reference: https://portswigger.net/web-security/csrf/lab-no-defenses
@@ -180,3 +181,39 @@ This lab has no ``csrf`` token, but using the generated PoC results in a "*Inval
 <meta name="referrer" content="no-referrer">
 ```
 5. Store the exploit, then click "Deliver to victim" to solve the lab.
+
+## CSRF with broken Referer validation
+Reference: https://portswigger.net/web-security/csrf/lab-referer-validation-broken
+
+<!-- omit in toc -->
+### Quick Solution
+This lab is a little bit different from the previous, in this case the ``Referer`` header cannot be removed, but it can be bypassed by adding a query string to the history of the page:
+```javascript
+history.pushState("", "", "/?your-lab-id.web-security-academy.net")
+```
+
+Modern browsers do not add the query string in the ``Referer`` header, so I had to also add:
+```html
+<meta name="referrer" content="unsafe-url">
+```
+
+<!-- omit in toc -->
+### Solution
+1. With your browser proxying traffic through Burp Suite, log in to your account, submit the "Update email" form, and find the resulting request in your Proxy history.
+2. Send the request to Burp Repeater. Observe that if you change the domain in the Referer HTTP header, the request is rejected.
+3. Copy the original domain of your lab instance and append it to the Referer header in the form of a query string. The result should look something like this:
+```
+Referer: https://arbitrary-incorrect-domain.net?your-lab-id.web-security-academy.net
+```
+4. Send the request and observe that it is now accepted. The website seems to accept any Referer header as long as it contains the expected domain somewhere in the string.
+5. Create a CSRF proof of concept exploit as described in the solution to the CSRF vulnerability with no defenses lab and host it on the exploit server. Edit the JavaScript so that the third argument of the ``history.pushState()`` function includes a query string with your lab instance URL as follows:
+```
+history.pushState("", "", "/?your-lab-id.web-security-academy.net")
+```
+This will cause the Referer header in the generated request to contain the URL of the target site in the query string, just like we tested earlier.
+6. If you store the exploit and test it by clicking "View exploit", you may encounter the "invalid Referer header" error again. This is because many browsers now strip the query string from the Referer header by default as a security measure. To override this behavior and ensure that the full URL is included in the request, go back to the exploit server and add the following header to the "Head" section:
+```
+Referrer-Policy: unsafe-url
+```
+7. Note that unlike the normal Referer header, the word "referrer" must be spelled correctly in this case.
+Store the exploit, then click "Deliver to victim" to solve the lab.
