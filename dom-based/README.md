@@ -34,3 +34,21 @@ Reference: https://portswigger.net/web-security/dom-based/controlling-the-web-me
 This script sends a web message containing an arbitrary JavaScript payload, along with the string "``http:``". The second argument specifies that any ``targetOrigin`` is allowed for the web message.
 
 When the iframe loads, the ``postMessage()`` method sends the JavaScript payload to the main page. The event listener spots the ``"http:``" string and proceeds to send the payload to the ``location.href`` sink, where the ``print()`` function is called.
+
+##
+Reference: 
+
+<!-- omit in toc -->
+### Solution
+1. Notice that the home page contains an event listener that listens for a web message. This event listener expects a string that is parsed using ``JSON.parse()``. In the JavaScript, we can see that the event listener expects a ``type`` property and that the ``load-channel`` case of the ``switch`` statement changes the ``iframe src`` attribute.
+2. Go to the exploit server and add the following ``iframe`` to the body, remembering to replace ``your-lab-id`` with your lab ID:
+```html
+<iframe src=https://your-lab-id.web-security-academy.net/ onload='this.contentWindow.postMessage("{\"type\":\"load-channel\",\"url\":\"javascript:print()\"}","*")'>
+```
+3. Store the exploit and deliver it to the victim.
+   
+When the iframe we constructed loads, the ``postMessage()`` method sends a web message to the home page with the type ``load-channel``. The event listener receives the message and parses it using ``JSON.parse()`` before sending it to the switch.
+
+The switch triggers the ``load-channel`` case, which assigns the ``url`` property of the message to the ``src`` attribute of the ``ACMEplayer.element iframe``. However, in this case, the ``url`` property of the message actually contains our JavaScript payload.
+
+As the second argument specifies that any ``targetOrigin`` is allowed for the web message, and the event handler does not contain any form of origin check, the payload is set as the ``src`` of the ``ACMEplayer.element iframe``. The ``print()`` function is called when the victim loads the page in their browser.
