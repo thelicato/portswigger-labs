@@ -7,6 +7,7 @@
 - [Basic SSRF against the local server](#basic-ssrf-against-the-local-server)
 - [Basic SSRF against another back-end system](#basic-ssrf-against-another-back-end-system)
 - [SSRF with blacklist-based input filter](#ssrf-with-blacklist-based-input-filter)
+- [SSRF with filter bypass via open redirection vulnerability](#ssrf-with-filter-bypass-via-open-redirection-vulnerability)
 
 ## Basic SSRF against the local server
 Reference: https://portswigger.net/web-security/ssrf/lab-basic-ssrf-against-localhost
@@ -44,3 +45,21 @@ Reference: https://portswigger.net/web-security/ssrf/lab-ssrf-with-blacklist-fil
 3. Bypass the block by changing the URL to: ``http://127.1/``
 4. Change the URL to ``http://127.1/admin`` and observe that the URL is blocked again.
 5. Obfuscate the "a" by double-URL encoding it to ``%2561`` to access the admin interface and delete the target user.
+
+## SSRF with filter bypass via open redirection vulnerability
+Reference: https://portswigger.net/web-security/ssrf/lab-ssrf-filter-bypass-via-open-redirection
+
+<!-- omit in toc -->
+### Solution
+1. Visit a product, click "Check stock", intercept the request in Burp Suite, and send it to Burp Repeater.
+2. Try tampering with the ``stockApi`` parameter and observe that it isn't possible to make the server issue the request directly to a different host.
+3. Click "next product" and observe that the ``path`` parameter is placed into the Location header of a redirection response, resulting in an open redirection.
+4. Create a URL that exploits the open redirection vulnerability, and redirects to the admin interface, and feed this into the ``stockApi`` parameter on the stock checker:
+```
+/product/nextProduct?path=http://192.168.0.12:8080/admin
+```
+5. Observe that the stock checker follows the redirection and shows you the admin page.
+6. Amend the path to delete the target user:
+```
+/product/nextProduct?path=http://192.168.0.12:8080/admin/delete?username=carlos
+```
