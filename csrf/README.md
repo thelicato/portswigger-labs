@@ -9,6 +9,7 @@
 - [CSRF where token validation depends on token being present](#csrf-where-token-validation-depends-on-token-being-present)
 - [CSRF where token is not tied to user session](#csrf-where-token-is-not-tied-to-user-session)
 - [CSRF where token is tied to non-session cookie](#csrf-where-token-is-tied-to-non-session-cookie)
+- [CSRF where token is duplicated in cookie](#csrf-where-token-is-duplicated-in-cookie)
 
 ## CSRF vulnerability with no defenses
 Reference: https://portswigger.net/web-security/csrf/lab-no-defenses
@@ -134,3 +135,26 @@ Now that we find a way to inject ``csrfKey`` into the victim's browser the PoC f
 <img src="$cookie-injection-url" onerror="document.forms[0].submit()">
 ```
 10. Store the exploit, then click "Deliver to victim" to solve the lab.
+
+## CSRF where token is duplicated in cookie
+Reference: https://portswigger.net/web-security/csrf/lab-token-duplicated-in-cookie
+
+<!-- omit in toc -->
+### Quick Solution
+This lab is somehow similar to the one before. In this case the ``csrf`` is duplicated in a cookie and can be injected into the victim's browser the same way as the previous lab.
+
+<!-- omit in toc -->
+### Solution
+1. With your browser proxying traffic through Burp Suite, log in to your account, submit the "Update email" form, and find the resulting request in your Proxy history.
+2. Send the request to Burp Repeater and observe that the value of the ``csrf`` body parameter is simply being validated by comparing it with the csrf cookie.
+3. Perform a search, send the resulting request to Burp Repeater, and observe that the search term gets reflected in the Set-Cookie header. Since the search function has no CSRF protection, you can use this to inject cookies into the victim user's browser.
+4. Create a URL that uses this vulnerability to inject a fake csrf cookie into the victim's browser:
+```
+/?search=test%0d%0aSet-Cookie:%20csrf=fake
+```
+5. Create and host a proof of concept exploit as described in the solution to the CSRF vulnerability with no defenses lab, ensuring that your CSRF token is set to "fake". The exploit should be created from the email change request.
+6. Remove the script block, and instead add the following code to inject the cookie and submit the form:
+```html
+<img src="$cookie-injection-url" onerror="document.forms[0].submit();"/>
+```
+7. Store the exploit, then click "Deliver to victim" to solve the lab.
