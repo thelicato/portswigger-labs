@@ -7,6 +7,7 @@
 - [DOM XSS using web messages](#dom-xss-using-web-messages)
 - [DOM XSS using web messages and a JavaScript URL](#dom-xss-using-web-messages-and-a-javascript-url)
 - [DOM XSS using web messages and JSON.parse](#dom-xss-using-web-messages-and-jsonparse)
+- [DOM-based open redirection](#dom-based-open-redirection)
 
 ## DOM XSS using web messages
 Reference: https://portswigger.net/web-security/dom-based/controlling-the-web-message-source/lab-dom-xss-using-web-messages
@@ -53,3 +54,17 @@ When the iframe we constructed loads, the ``postMessage()`` method sends a web m
 The switch triggers the ``load-channel`` case, which assigns the ``url`` property of the message to the ``src`` attribute of the ``ACMEplayer.element iframe``. However, in this case, the ``url`` property of the message actually contains our JavaScript payload.
 
 As the second argument specifies that any ``targetOrigin`` is allowed for the web message, and the event handler does not contain any form of origin check, the payload is set as the ``src`` of the ``ACMEplayer.element iframe``. The ``print()`` function is called when the victim loads the page in their browser.
+
+## DOM-based open redirection
+Reference: https://portswigger.net/web-security/dom-based/open-redirection/lab-dom-open-redirection
+
+<!-- omit in toc -->
+### Solution
+The blog post page contains the following link, which returns to the home page of the blog:
+```html
+<a href='#' onclick='returnURL' = /url=https?:\/\/.+)/.exec(location); if(returnUrl)location.href = returnUrl[1];else location.href = "/"'>Back to Blog</a>
+```
+The ``url`` parameter contains an open redirection vulnerability that allows you to change where the "Back to Blog" link takes the user. To solve the lab, construct and visit the following URL, remembering to change the URL to contain your lab ID and your exploit-server ID:
+```
+https://your-lab-id.web-security-academy.net/post?postId=4&url=https://your-exploit-server-id.web-security-academy.net/
+```
