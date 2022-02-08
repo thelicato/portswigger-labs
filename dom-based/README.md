@@ -8,6 +8,7 @@
 - [DOM XSS using web messages and a JavaScript URL](#dom-xss-using-web-messages-and-a-javascript-url)
 - [DOM XSS using web messages and JSON.parse](#dom-xss-using-web-messages-and-jsonparse)
 - [DOM-based open redirection](#dom-based-open-redirection)
+- [DOM-based cookie manipulation](#dom-based-cookie-manipulation)
 
 ## DOM XSS using web messages
 Reference: https://portswigger.net/web-security/dom-based/controlling-the-web-message-source/lab-dom-xss-using-web-messages
@@ -68,3 +69,16 @@ The ``url`` parameter contains an open redirection vulnerability that allows you
 ```
 https://your-lab-id.web-security-academy.net/post?postId=4&url=https://your-exploit-server-id.web-security-academy.net/
 ```
+
+## DOM-based cookie manipulation
+Reference: https://portswigger.net/web-security/dom-based/cookie-manipulation/lab-dom-cookie-manipulation
+
+<!-- omit in toc -->
+### Solution
+1. Notice that the home page uses a client-side cookie called ``lastViewedProduct``, whose value is the URL of the last product page that the user visited.
+2. Go to the exploit server and add the following ``iframe`` to the body, remembering to replace ``your-lab-id`` with your lab ID:
+```
+<iframe src="https://your-lab-id.web-security-academy.net/product?productId=1&'><script>print()</script>" onload="if(!window.x)this.src='https://your-lab-id.web-security-academy.net';window.x=1;">
+```
+3. Store the exploit and deliver it to the victim.
+The original source of the ``iframe`` matches the URL of one of the product pages, except there is a JavaScript payload added to the end. When the ``iframe`` loads for the first time, the browser temporarily opens the malicious URL, which is then saved as the value of the ``lastViewedProduct`` cookie. The onload event handler ensures that the victim is then immediately redirected to the home page, unaware that this manipulation ever took place. While the victim's browser has the poisoned cookie saved, loading the home page will cause the payload to execute.
