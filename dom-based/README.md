@@ -6,6 +6,7 @@
 
 - [DOM XSS using web messages](#dom-xss-using-web-messages)
 - [DOM XSS using web messages and a JavaScript URL](#dom-xss-using-web-messages-and-a-javascript-url)
+- [DOM XSS using web messages and JSON.parse](#dom-xss-using-web-messages-and-jsonparse)
 
 ## DOM XSS using web messages
 Reference: https://portswigger.net/web-security/dom-based/controlling-the-web-message-source/lab-dom-xss-using-web-messages
@@ -35,8 +36,8 @@ This script sends a web message containing an arbitrary JavaScript payload, alon
 
 When the iframe loads, the ``postMessage()`` method sends the JavaScript payload to the main page. The event listener spots the ``"http:``" string and proceeds to send the payload to the ``location.href`` sink, where the ``print()`` function is called.
 
-##
-Reference: 
+## DOM XSS using web messages and JSON.parse
+Reference: https://portswigger.net/web-security/dom-based/controlling-the-web-message-source/lab-dom-xss-using-web-messages-and-json-parse
 
 <!-- omit in toc -->
 ### Solution
