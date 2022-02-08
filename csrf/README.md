@@ -10,6 +10,7 @@
 - [CSRF where token is not tied to user session](#csrf-where-token-is-not-tied-to-user-session)
 - [CSRF where token is tied to non-session cookie](#csrf-where-token-is-tied-to-non-session-cookie)
 - [CSRF where token is duplicated in cookie](#csrf-where-token-is-duplicated-in-cookie)
+- [CSRF where Referer validation depends on header being present](#csrf-where-referer-validation-depends-on-header-being-present)
 
 ## CSRF vulnerability with no defenses
 Reference: https://portswigger.net/web-security/csrf/lab-no-defenses
@@ -158,3 +159,24 @@ This lab is somehow similar to the one before. In this case the ``csrf`` is dupl
 <img src="$cookie-injection-url" onerror="document.forms[0].submit();"/>
 ```
 7. Store the exploit, then click "Deliver to victim" to solve the lab.
+
+## CSRF where Referer validation depends on header being present
+Reference: https://portswigger.net/web-security/csrf/lab-referer-validation-depends-on-header-being-present
+
+<!-- omit in toc -->
+### Quick Solution
+This lab has no ``csrf`` token, but using the generated PoC results in a "*Invalid referer header* error. The catch is that removing the **Referer** header solves the issue. To remove it from the POST of the PoC just add the following line in the *head* section of the exploit page:
+```html
+<meta name="referrer" content="no-referrer">
+```
+
+<!-- omit in toc -->
+### Solution
+1. With your browser proxying traffic through Burp Suite, log in to your account, submit the "Update email" form, and find the resulting request in your Proxy history.
+2. Send the request to Burp Repeater and observe that if you change the domain in the Referer HTTP header then the request is rejected.
+3. Delete the Referer header entirely and observe that the request is now accepted.
+4. Create and host a proof of concept exploit as described in the solution to the CSRF vulnerability with no defenses lab. Include the following HTML to suppress the Referer header:
+```
+<meta name="referrer" content="no-referrer">
+```
+5. Store the exploit, then click "Deliver to victim" to solve the lab.
