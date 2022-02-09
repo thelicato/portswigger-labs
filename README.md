@@ -11,7 +11,10 @@ The tools needed (other than Burp Pro) to complete the labs.
 - **SQL Injection**: ``sqlmap``;
 - **XSS**: ``dalfox``, ``xsstrike``;
 - **Clickjacking**: None;
+- **DOM-based**: None;
 - **CORS**: None;
+- **XXE**: None;
+- **SSRF**: None;
 - **WebSockets**: None;
 - **Information Disclosure**: None;
 - **File Upload Vulnerabilities**: ``ExifTool``;
