@@ -24,7 +24,7 @@ This primary goal is to add the **Apprentice** and **Practitioner** level labs (
 - [x] Clickjacking Labs
 - [x] DOM-based vulnerabilities Labs
 - [x] CORS Labs
-- [ ] XXE Injection Labs
+- [x] XXE Injection Labs
 - [x] SSRF Labs
 - [ ] HTTP Request Smuggling Labs
 - [ ] OS Command Injection Labs
