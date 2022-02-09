@@ -5,6 +5,7 @@
 ## Table of Contents
 
 - [OS command injection, simple case](#os-command-injection-simple-case)
+- [Blind OS command injection with time delays](#blind-os-command-injection-with-time-delays)
 
 ## OS command injection, simple case
 Reference: https://portswigger.net/web-security/os-command-injection/lab-simple
@@ -22,3 +23,22 @@ The payload provided by PortSwigger is a little bit different, but the result is
 1. Use Burp Suite to intercept and modify a request that checks the stock level.
 2. Modify the ``storeID`` parameter, giving it the value ``1|whoami``.
 3. Observe that the response contains the name of the current user.
+
+## Blind OS command injection with time delays
+Reference: https://portswigger.net/web-security/os-command-injection/lab-blind-time-delays
+
+<!-- omit in toc -->
+### Quick Solution
+As with the previous lab I used a different payload to solve the lab. I tried the following payload on every parameter of the **Submit feedback** request (until it worked with the ``email`` parameter):
+```
+%26sleep%2010%26
+```
+
+<!-- omit in toc -->
+### Solution
+1. Use Burp Suite to intercept and modify the request that submits feedback.
+2. Modify the ``email`` parameter, changing it to:
+```
+email=x||ping+-c+10+127.0.0.1||
+```
+3. Observe that the response takes 10 seconds to return.
