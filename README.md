@@ -15,8 +15,9 @@ The tools needed (other than Burp Pro) to complete the labs.
 - **CORS**: None;
 - **XXE**: None;
 - **SSRF**: None;
-- **OS Command Injection**: None,
-- **Directory Traversal**: None,
+- **OS Command Injection**: None;
+- **Server-Side Template Injection**: None;
+- **Directory Traversal**: None;
 - **WebSockets**: None;
 - **Information Disclosure**: None;
 - **File Upload Vulnerabilities**: ``ExifTool``;
@@ -33,7 +34,7 @@ This primary goal is to add the **Apprentice** and **Practitioner** level labs (
 - [x] SSRF Labs
 - [ ] HTTP Request Smuggling Labs
 - [x] OS Command Injection Labs
-- [ ] Server-Side Template Injection Labs
+- [x] Server-Side Template Injection Labs
 - [x] Directory Traversal Labs
 - [ ] Access Control Vulnerabilities Labs
 - [ ] Authentication Labs
