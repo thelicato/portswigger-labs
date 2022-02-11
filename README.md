@@ -20,6 +20,7 @@ The tools needed (other than Burp Pro) to complete the labs.
 - **Directory Traversal**: None;
 - **WebSockets**: None;
 - **Information Disclosure**: None;
+- **OAuth authentication**: None;
 - **File Upload Vulnerabilities**: ``ExifTool``;
 
 ## Roadmap
@@ -44,5 +45,5 @@ This primary goal is to add the **Apprentice** and **Practitioner** level labs (
 - [x] Information Disclosure Labs
 - [ ] Business Logic Vulnerabilities Labs
 - [ ] HTTP Host Header Attacks Labs
-- [ ] OAuth Authentication Labs
+- [x] OAuth Authentication Labs
 - [x] File Upload Vulnerabilities Labs
