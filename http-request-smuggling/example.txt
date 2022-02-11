@@ -1,2 +1,0 @@
-GET /admin HTTP/1.1
-
