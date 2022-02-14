@@ -7,6 +7,7 @@
 - [Unprotected admin functionality](#unprotected-admin-functionality)
 - [Unprotected admin functionality with unpredictable URL](#unprotected-admin-functionality-with-unpredictable-url)
 - [User role controlled by request parameter](#user-role-controlled-by-request-parameter)
+- [User role can be modified in user profile](#user-role-can-be-modified-in-user-profile)
 
 ## Unprotected admin functionality
 Reference: https://portswigger.net/web-security/access-control/lab-unprotected-admin-functionality
@@ -37,3 +38,15 @@ Reference: https://portswigger.net/web-security/access-control/lab-user-role-con
 4. Complete and submit the login page, and forward the resulting request in Burp.
 5. Observe that the response sets the cookie ``Admin=false``. Change it to ``Admin=true``.
 6. Load the admin panel and delete ``carlos``.
+
+## User role can be modified in user profile
+Reference: https://portswigger.net/web-security/access-control/lab-user-role-can-be-modified-in-user-profile
+
+<!-- omit in toc -->
+### Solution
+1. Log in using the supplied credentials and access your account page.
+2. Use the provided feature to update the email address associated with your account.
+3. Observe that the response contains your role ID.
+4. Send the email submission request to Burp Repeater, add ``"roleid":2`` into the JSON in the request body, and resend it.
+5. Observe that the response shows your ``roleid`` has changed to 2.
+6. Browse to ``/admin`` and delete ``carlos``.
