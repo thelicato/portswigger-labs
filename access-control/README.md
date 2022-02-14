@@ -14,6 +14,7 @@
 - [User ID controlled by request parameter, with unpredictable user IDs](#user-id-controlled-by-request-parameter-with-unpredictable-user-ids)
 - [User ID controlled by request parameter with data leakage in redirect](#user-id-controlled-by-request-parameter-with-data-leakage-in-redirect)
 - [User ID controlled by request parameter with password disclosure](#user-id-controlled-by-request-parameter-with-password-disclosure)
+- [Insecure direct object references](#insecure-direct-object-references)
 
 ## Unprotected admin functionality
 Reference: https://portswigger.net/web-security/access-control/lab-unprotected-admin-functionality
@@ -122,3 +123,14 @@ Reference: https://portswigger.net/web-security/access-control/lab-user-id-contr
 2. Change the "id" parameter in the URL to ``administrator``.
 3. View the response in Burp and observe that it contains the administrator's password.
 4. Log in to the administrator account and delete ``carlos``.
+
+## Insecure direct object references
+Reference: https://portswigger.net/web-security/access-control/lab-insecure-direct-object-references
+
+<!-- omit in toc -->
+### Solution
+1. Select the **Live chat** tab.
+2. Send a message and then select **View transcript**.
+3. Review the URL and observe that the transcripts are text files assigned a filename containing an incrementing number.
+4. Change the filename to ``1.txt`` and review the text. Notice a password within the chat transcript.
+5. Return to the main lab page and log in using the stolen credentials.
