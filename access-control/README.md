@@ -16,6 +16,7 @@
 - [User ID controlled by request parameter with password disclosure](#user-id-controlled-by-request-parameter-with-password-disclosure)
 - [Insecure direct object references](#insecure-direct-object-references)
 - [Multi-step process with no access control on one step](#multi-step-process-with-no-access-control-on-one-step)
+- [Referer-based access control](#referer-based-access-control)
 
 ## Unprotected admin functionality
 Reference: https://portswigger.net/web-security/access-control/lab-unprotected-admin-functionality
@@ -145,3 +146,14 @@ Reference: https://portswigger.net/web-security/access-control/lab-multi-step-pr
 2. Browse to the admin panel, promote ``carlos``, and send the confirmation HTTP request to Burp Repeater.
 3. Open a private/incognito browser window, and log in with the non-admin credentials.
 4. Copy the non-admin user's session cookie into the existing Repeater request, change the username to yours, and replay it.
+
+## Referer-based access control
+Reference: https://portswigger.net/web-security/access-control/lab-referer-based-access-control
+
+<!-- omit in toc -->
+### Solution
+1. Log in using the admin credentials.
+2. Browse to the admin panel, promote ``carlos``, and send the HTTP request to Burp Repeater.
+3. Open a private/incognito browser window, and log in with the non-admin credentials.
+4. Browse to ``/admin-roles?username=carlos&action=upgrade`` and observe that the request is treated as unauthorized due to the absent Referer header.
+5. Copy the non-admin user's session cookie into the existing Burp Repeater request, change the username to yours, and replay it.
