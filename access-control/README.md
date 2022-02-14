@@ -15,6 +15,7 @@
 - [User ID controlled by request parameter with data leakage in redirect](#user-id-controlled-by-request-parameter-with-data-leakage-in-redirect)
 - [User ID controlled by request parameter with password disclosure](#user-id-controlled-by-request-parameter-with-password-disclosure)
 - [Insecure direct object references](#insecure-direct-object-references)
+- [Multi-step process with no access control on one step](#multi-step-process-with-no-access-control-on-one-step)
 
 ## Unprotected admin functionality
 Reference: https://portswigger.net/web-security/access-control/lab-unprotected-admin-functionality
@@ -134,3 +135,13 @@ Reference: https://portswigger.net/web-security/access-control/lab-insecure-dire
 3. Review the URL and observe that the transcripts are text files assigned a filename containing an incrementing number.
 4. Change the filename to ``1.txt`` and review the text. Notice a password within the chat transcript.
 5. Return to the main lab page and log in using the stolen credentials.
+
+## Multi-step process with no access control on one step
+Reference: https://portswigger.net/web-security/access-control/lab-multi-step-process-with-no-access-control-on-one-step
+
+<!-- omit in toc -->
+### Solution
+1. Log in using the admin credentials.
+2. Browse to the admin panel, promote ``carlos``, and send the confirmation HTTP request to Burp Repeater.
+3. Open a private/incognito browser window, and log in with the non-admin credentials.
+4. Copy the non-admin user's session cookie into the existing Repeater request, change the username to yours, and replay it.
