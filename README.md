@@ -18,6 +18,7 @@ The tools needed (other than Burp Pro) to complete the labs.
 - **OS Command Injection**: None;
 - **Server-Side Template Injection**: None;
 - **Directory Traversal**: None;
+- **Access Control**: None;
 - **WebSockets**: None;
 - **Information Disclosure**: None;
 - **OAuth authentication**: None;
@@ -37,7 +38,7 @@ This primary goal is to add the **Apprentice** and **Practitioner** level labs (
 - [x] OS Command Injection Labs
 - [x] Server-Side Template Injection Labs
 - [x] Directory Traversal Labs
-- [ ] Access Control Vulnerabilities Labs
+- [x] Access Control Vulnerabilities Labs
 - [ ] Authentication Labs
 - [x] WebSockets Labs
 - [ ] Web Cache Poisoning Labs
