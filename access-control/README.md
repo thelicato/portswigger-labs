@@ -8,6 +8,7 @@
 - [Unprotected admin functionality with unpredictable URL](#unprotected-admin-functionality-with-unpredictable-url)
 - [User role controlled by request parameter](#user-role-controlled-by-request-parameter)
 - [User role can be modified in user profile](#user-role-can-be-modified-in-user-profile)
+- [URL-based access control can be circumvented](#url-based-access-control-can-be-circumvented)
 
 ## Unprotected admin functionality
 Reference: https://portswigger.net/web-security/access-control/lab-unprotected-admin-functionality
@@ -50,3 +51,13 @@ Reference: https://portswigger.net/web-security/access-control/lab-user-role-can
 4. Send the email submission request to Burp Repeater, add ``"roleid":2`` into the JSON in the request body, and resend it.
 5. Observe that the response shows your ``roleid`` has changed to 2.
 6. Browse to ``/admin`` and delete ``carlos``.
+
+## URL-based access control can be circumvented
+Reference: https://portswigger.net/web-security/access-control/lab-url-based-access-control-can-be-circumvented
+
+<!-- omit in toc -->
+### Solution
+1. Try to load ``/admin`` and observe that you get blocked. Notice that the response is very plain, suggesting it may originate from a front-end system.
+2. Send the request to Burp Repeater. Change the URL in the request line to / and add the HTTP header ``X-Original-URL: /invalid``. Observe that the application returns a "not found" response. This indicates that the back-end system is processing the URL from the ``X-Original-URL`` header.
+3. Change the value of the ``X-Original-URL`` header to ``/admin``. Observe that you can now access the admin page.
+4. To delete the user ``carlos``, add ``?username=carlos`` to the real query string, and change the ``X-Original-URL`` path to ``/admin/delete``.
