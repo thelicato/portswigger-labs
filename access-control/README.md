@@ -12,6 +12,7 @@
 - [Method-based access control can be circumvented](#method-based-access-control-can-be-circumvented)
 - [User ID controlled by request parameter](#user-id-controlled-by-request-parameter)
 - [User ID controlled by request parameter, with unpredictable user IDs](#user-id-controlled-by-request-parameter-with-unpredictable-user-ids)
+- [User ID controlled by request parameter with data leakage in redirect](#user-id-controlled-by-request-parameter-with-data-leakage-in-redirect)
 
 ## Unprotected admin functionality
 Reference: https://portswigger.net/web-security/access-control/lab-unprotected-admin-functionality
@@ -99,3 +100,14 @@ Reference: https://portswigger.net/web-security/access-control/lab-user-id-contr
 3. Log in using the supplied credentials and access your account page.
 4. Change the "id" parameter to the saved user ID.
 5. Retrieve and submit the API key.
+
+## User ID controlled by request parameter with data leakage in redirect
+Reference: https://portswigger.net/web-security/access-control/lab-user-id-controlled-by-request-parameter-with-data-leakage-in-redirect
+
+<!-- omit in toc -->
+### Solution
+1. Log in using the supplied credentials and access your account page.
+2. Send the request to Burp Repeater.
+3. Change the "id" parameter to ``carlos``.
+4. Observe that although the response is now redirecting you to the home page, it has a body containing the API key belonging to ``carlos``.
+5. Submit the API key.
