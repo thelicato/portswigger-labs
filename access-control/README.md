@@ -13,6 +13,7 @@
 - [User ID controlled by request parameter](#user-id-controlled-by-request-parameter)
 - [User ID controlled by request parameter, with unpredictable user IDs](#user-id-controlled-by-request-parameter-with-unpredictable-user-ids)
 - [User ID controlled by request parameter with data leakage in redirect](#user-id-controlled-by-request-parameter-with-data-leakage-in-redirect)
+- [User ID controlled by request parameter with password disclosure](#user-id-controlled-by-request-parameter-with-password-disclosure)
 
 ## Unprotected admin functionality
 Reference: https://portswigger.net/web-security/access-control/lab-unprotected-admin-functionality
@@ -111,3 +112,13 @@ Reference: https://portswigger.net/web-security/access-control/lab-user-id-contr
 3. Change the "id" parameter to ``carlos``.
 4. Observe that although the response is now redirecting you to the home page, it has a body containing the API key belonging to ``carlos``.
 5. Submit the API key.
+
+## User ID controlled by request parameter with password disclosure
+Reference: https://portswigger.net/web-security/access-control/lab-user-id-controlled-by-request-parameter-with-password-disclosure
+
+<!-- omit in toc -->
+### Solution
+1. Log in using the supplied credentials and access the user account page.
+2. Change the "id" parameter in the URL to ``administrator``.
+3. View the response in Burp and observe that it contains the administrator's password.
+4. Log in to the administrator account and delete ``carlos``.
