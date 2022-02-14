@@ -10,6 +10,7 @@
 - [User role can be modified in user profile](#user-role-can-be-modified-in-user-profile)
 - [URL-based access control can be circumvented](#url-based-access-control-can-be-circumvented)
 - [Method-based access control can be circumvented](#method-based-access-control-can-be-circumvented)
+- [User ID controlled by request parameter](#user-id-controlled-by-request-parameter)
 
 ## Unprotected admin functionality
 Reference: https://portswigger.net/web-security/access-control/lab-unprotected-admin-functionality
@@ -75,3 +76,14 @@ Reference: https://portswigger.net/web-security/access-control/lab-method-based-
 5. Change the method from ``POST`` to ``POSTX`` and observe that the response changes to "missing parameter".
 6. Convert the request to use the ``GET`` method by right-clicking and selecting "Change request method".
 7. Change the username parameter to your username and resend the request.
+
+## User ID controlled by request parameter
+Reference: https://portswigger.net/web-security/access-control/lab-user-id-controlled-by-request-parameter
+
+<!-- omit in toc -->
+### Solution
+1. Log in using the supplied credentials and go to your account page.
+2. Note that the URL contains your username in the "id" parameter.
+3. Send the request to Burp Repeater.
+4. Change the "id" parameter to ``carlos``.
+5. Retrieve and submit the API key for ``carlos``.
