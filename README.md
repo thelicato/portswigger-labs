@@ -19,6 +19,7 @@ The tools needed (other than Burp Pro) to complete the labs.
 - **Server-Side Template Injection**: None;
 - **Directory Traversal**: None;
 - **Access Control**: None;
+- **Authentication**: None;
 - **WebSockets**: None;
 - **Information Disclosure**: None;
 - **OAuth authentication**: None;
@@ -39,7 +40,7 @@ This primary goal is to add the **Apprentice** and **Practitioner** level labs (
 - [x] Server-Side Template Injection Labs
 - [x] Directory Traversal Labs
 - [x] Access Control Vulnerabilities Labs
-- [ ] Authentication Labs
+- [x] Authentication Labs
 - [x] WebSockets Labs
 - [ ] Web Cache Poisoning Labs
 - [ ] Insecure Deserialization Labs
