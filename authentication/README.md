@@ -10,6 +10,7 @@
 - [Broken brute-force protection, IP block](#broken-brute-force-protection-ip-block)
 - [Username enumeration via account lock](#username-enumeration-via-account-lock)
 - [2FA simple bypass](#2fa-simple-bypass)
+- [2FA broken logic](#2fa-broken-logic)
 
 ## Username enumeration via different responses
 Reference: https://portswigger.net/web-security/authentication/password-based/lab-username-enumeration-via-different-responses
@@ -124,3 +125,21 @@ Reference: https://portswigger.net/web-security/authentication/multi-factor/lab-
 3. Log out of your account.
 4. Log in using the victim's credentials.
 5. When prompted for the verification code, manually change the URL to navigate to ``/my-account``. The lab is solved when the page loads.
+
+## 2FA broken logic
+Reference: https://portswigger.net/web-security/authentication/multi-factor/lab-2fa-broken-logic
+
+<!-- omit in toc -->
+### Quick Solution
+First make sure a MFA-code verification code is generated for user ``carlos`` by issuing a GET request to ``login2``, then bruteforce the POST request to ``login2`` using the *Payload type: Brute forcer*.
+
+<!-- omit in toc -->
+### Solution
+1. With Burp running, log in to your own account and investigate the 2FA verification process. Notice that in the ``POST /login2`` request, the ``verify`` parameter is used to determine which user's account is being accessed.
+2. Log out of your account.
+3. Send the ``GET /login2`` request to Burp Repeater. Change the value of the ``verify`` parameter to ``carlos`` and send the request. This ensures that a temporary 2FA code is generated for Carlos.
+4. Go to the login page and enter your username and password. Then, submit an invalid 2FA code.
+5. Send the ``POST /login2`` request to Burp Intruder.
+6. In Burp Intruder, set the ``verify`` parameter to ``carlos`` and add a payload position to the mfa-code parameter. Brute-force the verification code.
+7. Load the 302 response in your browser.
+8. Click My account to solve the lab.
