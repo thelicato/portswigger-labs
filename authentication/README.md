@@ -9,6 +9,7 @@
 - [Username enumeration via response timing](#username-enumeration-via-response-timing)
 - [Broken brute-force protection, IP block](#broken-brute-force-protection-ip-block)
 - [Username enumeration via account lock](#username-enumeration-via-account-lock)
+- [2FA simple bypass](#2fa-simple-bypass)
 
 ## Username enumeration via different responses
 Reference: https://portswigger.net/web-security/authentication/password-based/lab-username-enumeration-via-different-responses
@@ -112,3 +113,14 @@ username=§invalid-username§&password=example§§
 6. Add the list of passwords to the payload set and create a grep extraction rule for the error message. Start the attack.
 7. In the results, look at the grep extract column. Notice that there are a couple of different error messges, but one of the responses did not contain any error message. Make a note of this password.
 8. Wait for a minute to allow the account lock to reset. Log in using the username and password that you identified and access the user account page to solve the lab.
+
+## 2FA simple bypass
+Reference: https://portswigger.net/web-security/authentication/multi-factor/lab-2fa-simple-bypass
+
+<!-- omit in toc -->
+### Solution
+1. Log in to your own account. Your 2FA verification code will be sent to you by email. Click the **Email client** button to access your emails.
+2. Go to your account page and make a note of the URL.
+3. Log out of your account.
+4. Log in using the victim's credentials.
+5. When prompted for the verification code, manually change the URL to navigate to ``/my-account``. The lab is solved when the page loads.
