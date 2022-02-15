@@ -6,6 +6,7 @@
 
 - [Username enumeration via different responses](#username-enumeration-via-different-responses)
 - [Username enumeration via subtly different responses](#username-enumeration-via-subtly-different-responses)
+- [Username enumeration via response timing](#username-enumeration-via-response-timing)
 
 ## Username enumeration via different responses
 Reference: https://portswigger.net/web-security/authentication/password-based/lab-username-enumeration-via-different-responses
@@ -52,3 +53,26 @@ username=identified-user&password=§invalid-password§
 7. On the Payloads tab, clear the list of usernames and replace it with the list of passwords. Start the attack.
 8. When the attack is finished, notice that one of the requests received a ``302`` response. Make a note of this password.
 9. Log in using the username and password that you identified and access the user account page to solve the lab.
+
+## Username enumeration via response timing
+Reference: https://portswigger.net/web-security/authentication/password-based/lab-username-enumeration-via-response-timing
+
+<!-- omit in toc -->
+### Quick Solution
+This lab is a little bit tricky. The IP is blocked if too many requyests are made. To overcome this issue the ``X-Forwarded-For`` header can be used to spoof the IP address. Using a ``Pitchfork`` attack the right username can be retrieved looking at the time response. Once we found the username we can easily bruteforce the password.
+
+<!-- omit in toc -->
+### Solution
+1. With Burp running, submit an invalid username and password, then send the ``POST /login`` request to Burp Repeater. Experiment with different usernames and passwords. Notice that your IP will be blocked if you make too many invalid login attempts.
+2. Identify that the ``X-Forwarded-For`` header is supported, which allows you to spoof your IP address and bypass the IP-based brute-force protection.
+3. Continue experimenting with usernames and passwords. Pay particular attention to the response times. Notice that when the username is invalid, the response time is roughly the same. However, when you enter a valid username (your own), the response time is increased depending on the length of the password you entered.
+4. Send this request to Burp Intruder and select the attack type to Pitchfork. Clear the default payload positions and add the ``X-Forwarded-For`` header.
+5. Add payload positions for the ``X-Forwarded-For`` header and the ``username`` parameter. Set the password to a very long string of characters (about 100 characters should do it).
+6. On the Payloads tab, select payload set 1. Select the Numbers payload type. Enter the range 1 - 100 and set the step to 1. Set the max fraction digits to 0. This will be used to spoof your IP.
+7. Select payload set 2 and add the list of usernames. Start the attack.
+8. When the attack finishes, at the top of the dialog, click Columns and select the Response received and Response completed options. These two columns are now displayed in the results table.
+9. Notice that one of the response times was significantly longer than the others. Repeat this request a few times to make sure it consistently takes longer, then make a note of this username.
+10. Create a new Burp Intruder attack for the same request. Add the ``X-Forwarded-For`` header again and add a payload position to it. Insert the username that you just identified and add a payload position to the ``password`` parameter.
+11. On the Payloads tab, add the list of numbers in payload set 1 and add the list of passwords to payload set 2. Start the attack.
+12. When the attack is finished, find the response with a ``302`` status. Make a note of this password.
+13. Log in using the username and password that you identified and access the user account page to solve the lab.
