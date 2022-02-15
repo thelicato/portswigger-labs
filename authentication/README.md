@@ -14,6 +14,7 @@
 - [Brute-forcing a stay-logged-in cookie](#brute-forcing-a-stay-logged-in-cookie)
 - [Offline password cracking](#offline-password-cracking)
 - [Password reset broken logic](#password-reset-broken-logic)
+- [Password reset poisoning via middleware](#password-reset-poisoning-via-middleware)
 
 ## Username enumeration via different responses
 Reference: https://portswigger.net/web-security/authentication/password-based/lab-username-enumeration-via-different-responses
@@ -219,3 +220,25 @@ This lab has a vulnerable password reset functionality. The link received by ema
 5. In your browser, request a new password reset and change your password again. Send the ``POST /forgot-password?temp-forgot-password-token`` request to Burp Repeater again.
 6. In Burp Repeater, delete the value of the ``temp-forgot-password-token`` parameter in both the URL and request body. Change the ``username`` parameter to ``carlos``. Set the new password to whatever you want and send the request.
 7. In your browser, log in to Carlos's account using the new password you just set. Click My account to solve the lab.
+
+## Password reset poisoning via middleware
+Reference: https://portswigger.net/web-security/authentication/other-mechanisms/lab-password-reset-poisoning-via-middleware
+
+<!-- omit in toc -->
+### Quick Solution
+Use the ``X-Forwarded-Host`` header on the password reset functionality to send a password reset email with a malicious endpoint. Retrieve the token generated for user ``carlos`` and use it to reset his password.
+
+<!-- omit in toc -->
+### Solution
+1. With Burp running, investigate the password reset functionality. Observe that a link containing a unique reset token is sent via email.
+2. Send the ``POST /forgot-password`` request to Burp Repeater. Notice that the ``X-Forwarded-Host`` header is supported and you can use it to point the dynamically generated reset link to an arbitrary domain.
+3. Go to the exploit server and make a note of your exploit server URL.
+4. Go back to the request in Burp Repeater and add the ``X-Forwarded-Host`` header with your exploit server URL:
+```
+X-Forwarded-Host: your-exploit-server-id.web-security-academy.net
+```
+5. Change the ``username`` parameter to ``carlos`` and send the request.
+6. Go to the exploit server and open the access log. You should see a ``GET /forgot-password`` request, which contains the victim's token as a query parameter. Make a note of this token.
+7. Go back to your email client and copy the valid password reset link (not the one that points to the exploit server). Paste this into your browser and change the value of the ``temp-forgot-password-token`` parameter to the value that you stole from the victim.
+8. Load this URL and set a new password for Carlos's account.
+9. Log in to Carlos's account using the new password to solve the lab.
