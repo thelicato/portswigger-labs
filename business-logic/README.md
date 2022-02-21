@@ -12,6 +12,7 @@
 - [Inconsistent security controls](#inconsistent-security-controls)
 - [Weak isolation on dual-use endpoint](#weak-isolation-on-dual-use-endpoint)
 - [Insufficient workflow validation](#insufficient-workflow-validation)
+- [Authentication bypass via flawed state machine](#authentication-bypass-via-flawed-state-machine)
 
 ## Excessive trust in client-side controls
 Reference: https://portswigger.net/web-security/logic-flaws/examples/lab-logic-flaws-excessive-trust-in-client-side-controls
@@ -132,3 +133,15 @@ Reference: https://portswigger.net/web-security/logic-flaws/examples/lab-logic-f
 2. Study the proxy history. Observe that when you place an order, the ``POST /cart/checkout`` request redirects you to an order confirmation page. Send ``GET /cart/order-confirmation?order-confirmation=true`` to Burp Repeater.
 3. Add the leather jacket to your basket.
 4. In Burp Repeater, resend the order confirmation request. Observe that the order is completed without the cost being deducted from your store credit and the lab is solved.
+
+## Authentication bypass via flawed state machine
+Reference: https://portswigger.net/web-security/logic-flaws/examples/lab-logic-flaws-authentication-bypass-via-flawed-state-machine
+
+<!-- omit in toc -->
+### Solution
+1. With Burp running, complete the login process and notice that you need to select your role before you are taken to the home page.
+2. Use the content discovery tool to identify the ``/admin`` path.
+3. Try browsing to ``/admin`` directly from the role selection page and observe that this doesn't work.
+4. Log out and then go back to the login page. In Burp, turn on proxy intercept then log in.
+5. Forward the ``POST /login`` request. The next request is ``GET /role-selector``. Drop this request and then browse to the lab's home page. Observe that your role has defaulted to the ``administrator`` role and you have access to the admin panel.
+6. Delete Carlos to solve the lab.
