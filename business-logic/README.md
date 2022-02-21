@@ -13,6 +13,7 @@
 - [Weak isolation on dual-use endpoint](#weak-isolation-on-dual-use-endpoint)
 - [Insufficient workflow validation](#insufficient-workflow-validation)
 - [Authentication bypass via flawed state machine](#authentication-bypass-via-flawed-state-machine)
+- [Flawed enforcement of business rules](#flawed-enforcement-of-business-rules)
 
 ## Excessive trust in client-side controls
 Reference: https://portswigger.net/web-security/logic-flaws/examples/lab-logic-flaws-excessive-trust-in-client-side-controls
@@ -145,3 +146,15 @@ Reference: https://portswigger.net/web-security/logic-flaws/examples/lab-logic-f
 4. Log out and then go back to the login page. In Burp, turn on proxy intercept then log in.
 5. Forward the ``POST /login`` request. The next request is ``GET /role-selector``. Drop this request and then browse to the lab's home page. Observe that your role has defaulted to the ``administrator`` role and you have access to the admin panel.
 6. Delete Carlos to solve the lab.
+
+## Flawed enforcement of business rules
+Reference: https://portswigger.net/web-security/logic-flaws/examples/lab-logic-flaws-flawed-enforcement-of-business-rules
+
+<!-- omit in toc -->
+### Solution
+1. Log in and notice that there is a coupon code, ``NEWCUST5``.
+2. At the bottom of the page, sign up to the newsletter. You receive another coupon code, ``SIGNUP30``.
+3. Add the leather jacket to your cart.
+4. Go to the checkout and apply both of the coupon codes to get a discount on your order.
+5. Try applying the codes more than once. Notice that if you enter the same code twice in a row, it is rejected because the coupon has already been applied. However, if you alternate between the two codes, you can bypass this control.
+6. Reuse the two codes enough times to reduce your order total to less than your remaining store credit. Complete the order to solve the lab.
