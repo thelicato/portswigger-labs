@@ -7,6 +7,8 @@
 - [Excessive trust in client-side controls](#excessive-trust-in-client-side-controls)
 - [High-level logic vulnerability](#high-level-logic-vulnerability)
 - [Low-level logic flaw](#low-level-logic-flaw)
+- [Inconsistent handling of exceptional input](#inconsistent-handling-of-exceptional-input)
+  - [Solution](#solution)
 
 ## Excessive trust in client-side controls
 Reference: https://portswigger.net/web-security/logic-flaws/examples/lab-logic-flaws-excessive-trust-in-client-side-controls
@@ -53,3 +55,37 @@ This one is a little bit tricky. Once you add a **huge** number of *leather jack
 9. When the Intruder attack finishes, go to the ``POST /cart`` request in Burp Repeater and send a single request for 47 jackets. The total price of the order should now be ``-$1221.96``.
 10. Use Burp Repeater to add a suitable quantity of another item to your cart so that the total falls between $0 and $100.
 11. Place the order to solve the lab.
+
+## Inconsistent handling of exceptional input
+Reference: https://portswigger.net/web-security/logic-flaws/examples/lab-logic-flaws-inconsistent-handling-of-exceptional-input
+
+<!-- omit in toc -->
+### Quick Solution
+This lab is actually pretty tricky. You need to register a new user with a pretty long email to understand that the backend cuts the email to 255 characters. Once you understand it you have to create a new user with the following structure:
+```
+<219-random-characters>@dontwannacry.com.<your-exploit-db-domain>
+```
+The new user will be considered a member of the ``dontwannacry.com`` domain and it will be possible to access the admin panel.
+
+<!-- omit in to -->
+### Solution
+1. While proxying traffic through Burp, open the lab and go to the "Target" > "Site map" tab. Right-click on the lab domain and select "Engagement tools" > "Discover content" to open the content discovery tool.
+2. Click "Session is not running" to start the content discovery. After a short while, look at the "Site map" tab in the dialog. Notice that it discovered the path ``/admin``.
+3. Try to browse to ``/admin``. Although you don't have access, an error message indicates that ``DontWannaCry`` users do.
+4. Go to the account registration page. Notice the message telling ``DontWannaCry`` employees to use their company email address.
+5. From the button in the lab banner, open the email client. Make a note of the unique ID in the domain name for your email server (``@YOUR-EMAIL-ID.web-security-academy.net``).
+6. Go back to the lab and register with an exceptionally long email address in the format:
+```
+very-long-string@YOUR-EMAIL-ID.web-security-academy.net
+```
+The ``very-long-string`` should be at least 200 characters long.
+7. Go to the email client and notice that you have received a confirmation email. Click the link to complete the registration process.
+8. Log in and go to the "My account" page. Notice that your email address has been truncated to 255 characters.
+9. Log out and go back to the account registration page.
+10. Register a new account with another long email address, but this time include dontwannacry.com as a subdomain in your email address as follows:
+```
+very-long-string@dontwannacry.com.YOUR-EMAIL-ID.web-security-academy.net
+```
+Make sure that the ``very-long-string`` is the right number of characters so that the "m" at the end of ``@dontwannacry.com`` is character 255 exactly.
+11. Go to the email client and click the link in the confirmation email that you have received. Log in to your new account and notice that you now have access to the admin panel. The confirmation email was successfully sent to your email client, but the application server truncated the address associated with your account to 255 characters. As a result, you have been able to register with what appears to be a valid ``@dontwannacry.com`` address. You can confirm this from the "My account" page.
+12. Go to the admin panel and delete Carlos to solve the lab.
