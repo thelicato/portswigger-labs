@@ -11,6 +11,7 @@
   - [Solution](#solution)
 - [Inconsistent security controls](#inconsistent-security-controls)
 - [Weak isolation on dual-use endpoint](#weak-isolation-on-dual-use-endpoint)
+- [Insufficient workflow validation](#insufficient-workflow-validation)
 
 ## Excessive trust in client-side controls
 Reference: https://portswigger.net/web-security/logic-flaws/examples/lab-logic-flaws-excessive-trust-in-client-side-controls
@@ -121,3 +122,13 @@ Reference: https://portswigger.net/web-security/logic-flaws/examples/lab-logic-f
 5. Observe that the user whose password is changed is determined by the ``username`` parameter. Set ``username=administrator`` and send the request again.
 6. Log out and notice that you can now successfully log in as the ``administrator`` using the password you just set.
 7. Go to the admin panel and delete Carlos to solve the lab.
+
+## Insufficient workflow validation
+Reference: https://portswigger.net/web-security/logic-flaws/examples/lab-logic-flaws-insufficient-workflow-validation
+
+<!-- omit in toc -->
+### Solution
+1. With Burp running, log in and buy any item that you can afford with your store credit.
+2. Study the proxy history. Observe that when you place an order, the ``POST /cart/checkout`` request redirects you to an order confirmation page. Send ``GET /cart/order-confirmation?order-confirmation=true`` to Burp Repeater.
+3. Add the leather jacket to your basket.
+4. In Burp Repeater, resend the order confirmation request. Observe that the order is completed without the cost being deducted from your store credit and the lab is solved.
