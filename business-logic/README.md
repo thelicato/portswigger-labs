@@ -10,6 +10,7 @@
 - [Inconsistent handling of exceptional input](#inconsistent-handling-of-exceptional-input)
   - [Solution](#solution)
 - [Inconsistent security controls](#inconsistent-security-controls)
+- [Weak isolation on dual-use endpoint](#weak-isolation-on-dual-use-endpoint)
 
 ## Excessive trust in client-side controls
 Reference: https://portswigger.net/web-security/logic-flaws/examples/lab-logic-flaws-excessive-trust-in-client-side-controls
@@ -107,3 +108,16 @@ You can find your email domain name by clicking the "Email client" button.
 5. Go to the email client and click the link in the confirmation email to complete the registration.
 6. Log in using your new account and go to the "My account" page. Notice that you have the option to change your email address. Change your email address to an arbitrary ``@dontwannacry.com`` address.
 7. Notice that you now have access to the admin panel, where you can delete Carlos to solve the lab.
+
+## Weak isolation on dual-use endpoint
+Reference: https://portswigger.net/web-security/logic-flaws/examples/lab-logic-flaws-weak-isolation-on-dual-use-endpoint
+
+<!-- omit in toc -->
+### Solution
+1. With Burp running, log in and access your account page.
+2. Change your password.
+3. Study the ``POST /my-account/change-password`` request in Burp Repeater.
+4. Notice that if you remove the ``current-password`` parameter entirely, you are able to successfully change your password without providing your current one.
+5. Observe that the user whose password is changed is determined by the ``username`` parameter. Set ``username=administrator`` and send the request again.
+6. Log out and notice that you can now successfully log in as the ``administrator`` using the password you just set.
+7. Go to the admin panel and delete Carlos to solve the lab.
