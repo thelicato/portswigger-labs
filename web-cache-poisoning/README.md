@@ -10,6 +10,7 @@
 - [Targeted web cache poisoning using an unknown header](#targeted-web-cache-poisoning-using-an-unknown-header)
 - [Web cache poisoning via an unkeyed query string](#web-cache-poisoning-via-an-unkeyed-query-string)
 - [Web cache poisoning via an unkeyed query parameter](#web-cache-poisoning-via-an-unkeyed-query-parameter)
+- [Parameter cloaking](#parameter-cloaking)
 
 ## Web cache poisoning with an unkeyed header
 Reference: https://portswigger.net/web-security/web-cache-poisoning/exploiting-design-flaws/lab-web-cache-poisoning-with-an-unkeyed-header
@@ -155,3 +156,32 @@ GET /?utm_content='/><script>alert(1)</script>
 ```
 6. Once your payload is cached, remove the ``utm_content`` parameter, right-click on the request, and select "Copy URL". Open this URL in your browser and check that the ``alert()`` is triggered when you load the page.
 7. Remove your cache buster, re-add the ``utm_content`` parameter with your payload, and replay the request until the cache is poisoned for normal users. The lab will be solved when the victim user visits the poisoned home page
+
+## Parameter cloaking
+Reference: https://portswigger.net/web-security/web-cache-poisoning/exploiting-implementation-flaws/lab-web-cache-poisoning-param-cloaking
+
+<!-- omit in toc -->
+### Quick Solution
+The important thing here was to understand which param could be excluded from the cache key: always try with **UTM parameters**!
+
+<!-- omit in toc -->
+### Solution
+1. Identify that the ``utm_content`` parameter is supported. Observe that it is also excluded from the cache key.
+2. Notice that if you use a semicolon (;) to append another parameter to utm_content, the cache treats this as a single parameter. This means that the extra parameter is also excluded from the cache key. Alternatively, with Param Miner loaded, right-click on the request and select "Bulk scan" > "Rails parameter cloaking scan" to identify the vulnerability automatically.
+3. Observe that every page imports the script ``/js/geolocate.js``, executing the callback function ``setCountryCookie()``. Send the request ``GET /js/geolocate.js?callback=setCountryCookie`` to Burp Repeater.
+4. Notice that you can control the name of the function that is called on the returned data by editing the ``callback`` parameter. However, you can't poison the cache for other users in this way because the parameter is keyed.
+5. Study the cache behavior. Observe that if you add duplicate ``callback`` parameters, only the final one is reflected in the response, but both are still keyed. However, if you append the second ``callback`` parameter to the ``utm_content`` parameter using a semicolon, it is excluded from the cache key and still overwrites the callback function in the response:
+```
+GET /js/geolocate.js?callback=setCountryCookie&utm_content=foo;callback=arbitraryFunction
+
+HTTP/1.1 200 OK
+X-Cache-Key: /js/geolocate.js?callback=setCountryCookie
+…
+arbitraryFunction({"country" : "United Kingdom"})
+```
+6. Send the request again, but this time pass in alert(1) as the callback function:
+```
+GET /js/geolocate.js?callback=setCountryCookie&utm_content=foo;callback=alert(1)
+```
+7. Get the response cached, then load the home page in your browser. Check that the alert() is triggered.
+8. Replay the request to keep the cache poisoned. The lab will solve when the victim user visits any page containing this resource import URL.
