@@ -6,6 +6,7 @@
 
 - [Basic password reset poisoning](#basic-password-reset-poisoning)
 - [Web cache poisoning via ambiguous requests](#web-cache-poisoning-via-ambiguous-requests)
+- [Host header authentication bypass](#host-header-authentication-bypass)
 
 ## Basic password reset poisoning
 Reference: https://portswigger.net/web-security/host-header/exploiting/password-reset-poisoning/lab-host-header-basic-password-reset-poisoning
@@ -48,3 +49,15 @@ Host: your exploit-server-id.web-security-academy.net
 ```
 7. Send the request a couple of times until you get a cache hit with your exploit server URL reflected in the response. To simulate the victim, request the page in your browser using the same cache buster in the URL. Make sure that the ``alert()`` fires.
 8. In Burp Repeater, remove any cache busters and keep replaying the request until you have re-poisoned the cache. The lab is solved when the victim visits the home page.
+
+## Host header authentication bypass
+Reference: https://portswigger.net/web-security/host-header/exploiting/lab-host-header-authentication-bypass
+
+<!-- omit in toc -->
+### Solution
+1. Send the ``GET /`` request that received a 200 response to Burp Repeater. Notice that you can change the Host header to an arbitrary value and still successfully access the home page.
+2. Browse to ``/robots.txt`` and observe that there is an admin panel at ``/admin``.
+3. Try and browse to ``/admin``. You do not have access, but notice the error message, which reveals that the panel can be accessed by local users.
+4. Send the ``GET /admin`` request to Burp Repeater.
+5. In Burp Repeater, change the Host header to ``localhost`` and send the request. Observe that you have now successfully accessed the admin panel, which provides the option to delete different users.
+6. Change the request line to ``GET /admin/delete?username=carlos`` and send the request to delete Carlos and solve the lab.
