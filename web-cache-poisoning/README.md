@@ -9,6 +9,7 @@
 - [Web cache poisoning with multiple headers](#web-cache-poisoning-with-multiple-headers)
 - [Targeted web cache poisoning using an unknown header](#targeted-web-cache-poisoning-using-an-unknown-header)
 - [Web cache poisoning via an unkeyed query string](#web-cache-poisoning-via-an-unkeyed-query-string)
+- [Web cache poisoning via an unkeyed query parameter](#web-cache-poisoning-via-an-unkeyed-query-parameter)
 
 ## Web cache poisoning with an unkeyed header
 Reference: https://portswigger.net/web-security/web-cache-poisoning/exploiting-design-flaws/lab-web-cache-poisoning-with-an-unkeyed-header
@@ -138,3 +139,19 @@ GET /?evil='/><script>alert(1)</script>
 7. To simulate the victim, remove the query string from your request and send it again (while using the same cache buster). Check that you still receive the cached response containing your payload.
 8. Remove the cache-buster ``Origin`` header and add your payload back to the query string. Replay the request until you have poisoned the cache for normal users. Confirm this attack has been successful by loading the home page in your browser and observing the popup.
 9. The lab will be solved when the victim user visits the poisoned home page. You may need to re-poison the cache if the lab is not solved after 35 seconds.
+
+## Web cache poisoning via an unkeyed query parameter
+Reference: https://portswigger.net/web-security/web-cache-poisoning/exploiting-implementation-flaws/lab-web-cache-poisoning-unkeyed-param
+
+<!-- omit in toc -->
+### Solution
+1. Observe that the home page is a suitable cache oracle. Notice that you get a cache miss whenever you change the query string. This indicates that it is part of the cache key. Also notice that the query string is reflected in the response.
+2. Add a cache-buster query parameter.
+3. Use Param Miner's "Guess GET parameters" feature to identify that the parameter ``utm_content`` is supported by the application.
+4. Confirm that this parameter is unkeyed by adding it to the query string and checking that you still get a cache hit. Keep sending the request until you get a cache miss. Observe that this unkeyed parameter is also reflected in the response along with the rest of the query string.
+5. Send a request with a ``utm_content`` parameter that breaks out of the reflected string and injects an XSS payload:
+```
+GET /?utm_content='/><script>alert(1)</script>
+```
+6. Once your payload is cached, remove the ``utm_content`` parameter, right-click on the request, and select "Copy URL". Open this URL in your browser and check that the ``alert()`` is triggered when you load the page.
+7. Remove your cache buster, re-add the ``utm_content`` parameter with your payload, and replay the request until the cache is poisoned for normal users. The lab will be solved when the victim user visits the poisoned home page
