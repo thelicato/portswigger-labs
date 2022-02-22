@@ -21,6 +21,7 @@ The tools needed (other than Burp Pro) to complete the labs.
 - **Access Control**: None;
 - **Authentication**: None;
 - **WebSockets**: None;
+- **Web Cache Poisoning**: None;
 - **Information Disclosure**: None;
 - **OAuth authentication**: None;
 - **File Upload Vulnerabilities**: ``ExifTool``;
@@ -42,7 +43,7 @@ This primary goal is to add the **Apprentice** and **Practitioner** level labs (
 - [x] Access Control Vulnerabilities Labs
 - [x] Authentication Labs
 - [x] WebSockets Labs
-- [ ] Web Cache Poisoning Labs
+- [x] Web Cache Poisoning Labs
 - [ ] Insecure Deserialization Labs
 - [x] Information Disclosure Labs
 - [ ] Business Logic Vulnerabilities Labs
