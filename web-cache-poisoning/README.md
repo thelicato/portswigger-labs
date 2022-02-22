@@ -11,6 +11,7 @@
 - [Web cache poisoning via an unkeyed query string](#web-cache-poisoning-via-an-unkeyed-query-string)
 - [Web cache poisoning via an unkeyed query parameter](#web-cache-poisoning-via-an-unkeyed-query-parameter)
 - [Parameter cloaking](#parameter-cloaking)
+- [Web cache poisoning via a fat GET request](#web-cache-poisoning-via-a-fat-get-request)
 
 ## Web cache poisoning with an unkeyed header
 Reference: https://portswigger.net/web-security/web-cache-poisoning/exploiting-design-flaws/lab-web-cache-poisoning-with-an-unkeyed-header
@@ -185,3 +186,23 @@ GET /js/geolocate.js?callback=setCountryCookie&utm_content=foo;callback=alert(1)
 ```
 7. Get the response cached, then load the home page in your browser. Check that the alert() is triggered.
 8. Replay the request to keep the cache poisoned. The lab will solve when the victim user visits any page containing this resource import URL.
+
+## Web cache poisoning via a fat GET request
+Reference: https://portswigger.net/web-security/web-cache-poisoning/exploiting-implementation-flaws/lab-web-cache-poisoning-fat-get
+
+<!-- omit in toc -->
+### Solution
+1. Observe that every page imports the script ``/js/geolocate.js``, executing the callback function ``setCountryCookie()``. Send the request ``GET /js/geolocate.js?callback=setCountryCookie`` to Burp Repeater.
+2. Notice that you can control the name of the function that is called in the response by passing in a duplicate ``callback`` parameter via the request body. Also notice that the cache key is still derived from the original ``callback`` parameter in the request line:
+```
+GET /js/geolocate.js?callback=setCountryCookie
+…
+callback=arbitraryFunction
+
+HTTP/1.1 200 OK
+X-Cache-Key: /js/geolocate.js?callback=setCountryCookie
+…
+arbitraryFunction({"country" : "United Kingdom"})
+```
+3. Send the request again, but this time pass in ``alert(1)`` as the callback function. Check that you can successfully poison the cache.
+4. Remove any cache busters and re-poison the cache. The lab will solve when the victim user visits any page containing this resource import URL.
